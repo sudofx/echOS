@@ -494,7 +494,7 @@
 
         .group-mode-members {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 0.5rem;
             margin-bottom: 1rem;
         }
@@ -512,10 +512,18 @@
             flex-shrink: 0;
         }
 
+        .group-mode-member-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+
         .group-mode-desc {
             font-size: 0.85rem;
             color: var(--text-secondary);
             line-height: 1.5;
+            margin-bottom: 1rem;
         }
 
         /* JSON overlay */
@@ -983,6 +991,28 @@
                     console.error('Error parsing JSON:', error);
                     return false;
                 }
+            },
+            
+            toggleGroupMember(groupName, memberName, isChecked) {
+                if (!this.config.group_modes) return;
+                
+                const group = this.config.group_modes[groupName];
+                if (!group) return;
+                
+                if (isChecked) {
+                    // Add member if not already present
+                    if (!group.includes(memberName)) {
+                        group.push(memberName);
+                    }
+                } else {
+                    // Remove member
+                    const index = group.indexOf(memberName);
+                    if (index !== -1) {
+                        group.splice(index, 1);
+                    }
+                }
+                
+                this.lastSyncTime = new Date();
             }
         };
 
@@ -1256,6 +1286,9 @@
                     return;
                 }
                 
+                // Get all available persona names
+                const allPersonas = ConfigManager.config.personas.map(p => p.name);
+                
                 Object.keys(ConfigManager.config.group_modes).forEach((mode, index) => {
                     // Add to dropdown
                     const option = document.createElement('option');
@@ -1290,28 +1323,6 @@
                     const body = document.createElement('div');
                     body.className = 'group-mode-body';
                     
-                    // Members list
-                    const membersContainer = document.createElement('div');
-                    membersContainer.className = 'group-mode-members';
-                    
-                    ConfigManager.config.group_modes[mode].forEach(member => {
-                        const memberDiv = document.createElement('div');
-                        memberDiv.className = 'group-mode-member';
-                        
-                        const emoji = document.createElement('div');
-                        emoji.className = 'group-mode-member-emoji';
-                        emoji.textContent = ConfigManager.config.personas.find(p => p.name === member)?.emoji || '👤';
-                        
-                        const name = document.createElement('span');
-                        name.textContent = member;
-                        
-                        memberDiv.appendChild(emoji);
-                        memberDiv.appendChild(name);
-                        membersContainer.appendChild(memberDiv);
-                    });
-                    
-                    body.appendChild(membersContainer);
-                    
                     // Protocol description
                     const protocolKey = `${mode}_protocol`;
                     const protocol = ConfigManager.config.group_mode_protocols[protocolKey];
@@ -1322,11 +1333,63 @@
                         body.appendChild(desc);
                     }
                     
+                    // Members selector
+                    const membersGroup = document.createElement('div');
+                    membersGroup.className = 'form-group';
+                    
+                    const membersLabel = document.createElement('label');
+                    membersLabel.className = 'form-label';
+                    membersLabel.textContent = 'Group Members';
+                    membersGroup.appendChild(membersLabel);
+                    
+                    const membersContainer = document.createElement('div');
+                    membersContainer.className = 'group-mode-members';
+                    
+                    allPersonas.forEach(personaName => {
+                        const isMember = ConfigManager.config.group_modes[mode].includes(personaName);
+                        const persona = ConfigManager.config.personas.find(p => p.name === personaName);
+                        
+                        const memberDiv = document.createElement('div');
+                        memberDiv.className = 'group-mode-member-selector';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `group-${mode}-${personaName}`;
+                        checkbox.checked = isMember;
+                        checkbox.addEventListener('change', (e) => {
+                            ConfigManager.toggleGroupMember(mode, personaName, e.target.checked);
+                            this.updateGroupMemberDisplay(mode, personaName, e.target.checked);
+                        });
+                        
+                        const emoji = document.createElement('div');
+                        emoji.className = 'group-mode-member-emoji';
+                        emoji.textContent = persona?.emoji || '👤';
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `group-${mode}-${personaName}`;
+                        label.textContent = personaName;
+                        
+                        memberDiv.appendChild(checkbox);
+                        memberDiv.appendChild(emoji);
+                        memberDiv.appendChild(label);
+                        membersContainer.appendChild(memberDiv);
+                    });
+                    
+                    membersGroup.appendChild(membersContainer);
+                    body.appendChild(membersGroup);
+                    
                     content.appendChild(body);
                     card.appendChild(header);
                     card.appendChild(content);
                     container.appendChild(card);
                 });
+            },
+            
+            updateGroupMemberDisplay(groupName, memberName, isMember) {
+                // This method can be used to update the visual display when members change
+                // Currently handled by the checkbox change event directly
             },
             
             renderBoundaryPushingControls() {
