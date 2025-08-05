@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>echOS Configuration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Color scheme */
+            --primary-dark: #0f0f14;
+            --secondary-dark: #1a1a24;
+            --panel-bg: #23232e;
+            --panel-border: #3a3a4a;
+            --accent-blue: #4d8bf0;
+            --accent-teal: #3dd1e7;
+            --accent-purple: #9a77ff;
+            --text-primary: #e0e0e8;
+            --text-secondary: #b0b0c0;
+            --text-dim: #7a7a8c;
+            --hover-blue: rgba(77, 139, 240, 0.15);
+            --error-red: #ff4757;
+            --success-green: #2ed573;
+            --warning-orange: #ffa502;
+            
+            /* Spacing */
+            --grid-gap: 1rem;
+            --border-radius: 6px;
+            --panel-padding: 1.25rem;
+            --header-height: 3.5rem;
+            
+            /* Typography */
+            --font-mono: 'Roboto Mono', monospace;
+            --font-ui: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background: var(--primary-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--grid-gap);
+            min-height: 100vh;
+        }
+
+        /* Header section */
+        .header {
+            background: var(--secondary-dark);
+            border-radius: var(--border-radius);
+            padding: 1rem var(--panel-padding);
+            text-align: center;
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Status bar */
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: var(--grid-gap);
+        }
+
+        .status-card {
+            background: var(--panel-bg);
+            border-radius: var(--border-radius);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--panel-border);
+        }
+
+        .status-card:hover {
+            background: var(--hover-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .status-dot.connected {
+            background: var(--success-green);
+            box-shadow: 0 0 8px var(--success-green);
+        }
+
+        .status-dot.disconnected {
+            background: var(--error-red);
+            box-shadow: 0 0 8px var(--error-red);
+        }
+
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .status-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Control buttons */
+        .control-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: var(--grid-gap);
+        }
+
+        .btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 0.7rem;
+            border-radius: var(--border-radius);
+            font-family: var(--font-ui);
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--hover-blue);
+            box-shadow: 0 0 12px rgba(77, 139, 240, 0.2);
+        }
+
+        .btn.primary {
+            background: var(--accent-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn.secondary {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .btn.secondary:hover {
+            background: rgba(154, 119, 255, 0.1);
+        }
+
+        /* Main grid layout */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: var(--grid-gap);
+            min-height: calc(100vh - 220px);
+        }
+
+        /* Panel styling */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--border-radius);
+            padding: var(--panel-padding);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-teal);
+            letter-spacing: 0.5px;
+        }
+
+        .panel-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 0.1rem;
+        }
+
+        /* Terminal display */
+        .terminal-box {
+            background: rgba(15, 15, 20, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-teal);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Personas grid */
+        .personas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .persona-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .persona-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(77, 139, 240, 0.2);
+        }
+
+        .persona-header {
+            background: rgba(26, 26, 36, 0.9);
+            padding: 0.9rem;
+            border-bottom: 1px solid var(--panel-border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .persona-header:hover {
+            background: var(--hover-blue);
+        }
+
+        .persona-emoji {
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+
+        .persona-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .persona-info h3 {
+            color: var(--accent-blue);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .persona-role {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .persona-toggle {
+            margin-left: auto;
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .persona-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .persona-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .persona-content.expanded {
+            max-height: 1000px;
+            overflow-y: auto;
+        }
+
+        .persona-body {
+            padding: 1rem;
+        }
+
+        /* Form controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--accent-blue);
+            font-size: 0.85rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            background: rgba(15, 15, 20, 0.8);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--border-radius);
+            padding: 0.7rem;
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(77, 139, 240, 0.2);
+        }
+
+        /* Slider controls */
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: rgba(15, 15, 20, 0.8);
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-purple);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid var(--primary-dark);
+            box-shadow: 0 0 8px var(--accent-purple);
+        }
+
+        .slider-value {
+            min-width: 36px;
+            text-align: center;
+            font-weight: 500;
+            color: var(--accent-blue);
+            font-family: var(--font-mono);
+            background: rgba(15, 15, 20, 0.8);
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--panel-border);
+            font-size: 0.85rem;
+        }
+
+        /* Checkbox styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Group mode cards */
+        .group-mode-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .group-mode-header {
+            background: rgba(26, 26, 36, 0.9);
+            padding: 0.9rem;
+            border-bottom: 1px solid var(--panel-border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .group-mode-header:hover {
+            background: var(--hover-blue);
+        }
+
+        .group-mode-title {
+            color: var(--accent-teal);
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-mode-toggle {
+            color: var(--accent-blue);
+            font-size: 1rem;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .group-mode-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .group-mode-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+
+        .group-mode-content.expanded {
+            max-height: 1000px;
+            overflow-y: auto;
+        }
+
+        .group-mode-body {
+            padding: 1rem;
+        }
+
+        .group-mode-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .group-mode-member {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .group-mode-member-emoji {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .group-mode-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* JSON overlay */
+        .json-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 15, 20, 0.98);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .json-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .json-container {
+            width: 90%;
+            height: 90%;
+            max-width: 1000px;
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-blue);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(77, 139, 240, 0.3);
+        }
+
+        .json-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--panel-border);
+            background: rgba(26, 26, 36, 0.9);
+        }
+
+        .json-title {
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-family: var(--font-mono);
+        }
+
+        .json-textarea {
+            flex: 1;
+            background: var(--primary-dark);
+            border: none;
+            padding: 1.25rem;
+            color: var(--accent-teal);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+        }
+
+        /* Messages */
+        .message {
+            padding: 0.9rem 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            border: 1px solid transparent;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .message.success {
+            background: rgba(46, 213, 115, 0.1);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            color: var(--success-green);
+        }
+
+        .message.error {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            color: var(--error-red);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+                gap: 0.75rem;
+            }
+            
+            .status-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .control-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .control-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>echOS CONFIGURATION</h1>
+            <p>Persona Management System v3.3.0</p>
+        </header>
+
+        <!-- Status Bar -->
+        <section class="status-bar">
+            <div class="status-card">
+                <div class="status-dot" id="fileStatus"></div>
+                <div>
+                    <div class="status-label">File Status</div>
+                    <div class="status-value" id="fileStatusText">Disconnected</div>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-dot" id="syncStatus"></div>
+                <div>
+                    <div class="status-label">Sync Status</div>
+                    <div class="status-value" id="syncStatusText">Not Synced</div>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-dot connected"></div>
+                <div>
+                    <div class="status-label">System Status</div>
+                    <div class="status-value">Operational</div>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="status-dot connected"></div>
+                <div>
+                    <div class="status-label">Memory Usage</div>
+                    <div class="status-value">42%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Control Section -->
+        <section class="control-section">
+            <input type="file" id="fileInput" class="hidden" accept=".json">
+            <button class="btn" id="importBtn">
+                Import Config
+            </button>
+            <button class="btn primary" id="saveBtn">
+                Save Config
+            </button>
+            <button class="btn secondary" id="resetBtn">
+                Reset Defaults
+            </button>
+            <button class="btn" id="jsonEditorBtn">
+                JSON Editor
+            </button>
+        </section>
+
+        <!-- Main Grid Layout -->
+        <div class="main-grid">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Core Axiom Panel -->
+                <div class="panel" id="axiomPanel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title">Core Axiom</div>
+                            <div class="panel-subtitle">Behavior Foundation</div>
+                        </div>
+                    </div>
+                    <div class="terminal-box" id="coreAxiomDisplay">
+                        Loading axiom...
+                    </div>
+                </div>
+
+                <!-- Group Modes Panel -->
+                <div class="panel" id="groupModesPanel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title">Group Modes</div>
+                            <div class="panel-subtitle">Team Configurations</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Active Mode</label>
+                        <select class="form-select" id="activeGroupMode">
+                            <option>Select a group mode...</option>
+                        </select>
+                    </div>
+                    <div id="groupModesContainer"></div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                <!-- Personas Grid -->
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title">Personas</div>
+                            <div class="panel-subtitle">Individual Configurations</div>
+                        </div>
+                        <button class="btn" id="togglePersonasBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                            Toggle All
+                        </button>
+                    </div>
+                    <div class="personas-grid" id="personasGrid">
+                        <!-- Personas will be dynamically inserted here -->
+                    </div>
+                </section>
+
+                <!-- Configuration Sections -->
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title">System Protocols</div>
+                            <div class="panel-subtitle">Behavioral Parameters</div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--grid-gap);">
+                        <!-- Boundary Pushing Framework -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div>
+                                    <div class="panel-title">Boundary Pushing</div>
+                                    <div class="panel-subtitle">Creative Settings</div>
+                                </div>
+                            </div>
+                            <div id="boundaryPushingControls">
+                                <!-- Dynamically generated from config -->
+                            </div>
+                        </div>
+                        
+                        <!-- Communication Protocol -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div>
+                                    <div class="panel-title">Communication</div>
+                                    <div class="panel-subtitle">Interaction Settings</div>
+                                </div>
+                            </div>
+                            <div id="communicationProtocolControls">
+                                <!-- Dynamically generated from config -->
+                            </div>
+                        </div>
+
+                        <!-- Conflict Arbitration Protocol -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div>
+                                    <div class="panel-title">Conflict Arbitration</div>
+                                    <div class="panel-subtitle">Resolution Protocols</div>
+                                </div>
+                            </div>
+                            <div id="conflictArbitrationControls">
+                                <!-- Dynamically generated from config -->
+                            </div>
+                        </div>
+
+                        <!-- Memory Protocol -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div>
+                                    <div class="panel-title">Memory Protocol</div>
+                                    <div class="panel-subtitle">Continuity Settings</div>
+                                </div>
+                            </div>
+                            <div id="memoryProtocolControls">
+                                <!-- Dynamically generated from config -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Message Container -->
+        <div id="messageContainer"></div>
+    </div>
+
+    <!-- JSON Overlay -->
+    <div class="json-overlay" id="jsonOverlay">
+        <div class="json-container">
+            <div class="json-header">
+                <div class="json-title">JSON CONFIGURATION</div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn" id="copyBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                        Copy
+                    </button>
+                    <button class="btn secondary" id="closeJsonBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                        Close
+                    </button>
+                </div>
+            </div>
+            <textarea class="json-textarea" id="jsonEditor" placeholder="JSON configuration will appear here..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        // Configuration Manager
+        const ConfigManager = {
+            config: {},
+            isFileConnected: false,
+            lastSyncTime: null,
+            
+            async loadConfig() {
+                try {
+                    const response = await fetch('config.json');
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    this.config = await response.json();
+                    this.validateConfigStructure();
+                    this.isFileConnected = true;
+                    this.lastSyncTime = new Date();
+                    
+                    UI.showMessage('Configuration loaded successfully', 'success');
+                    return true;
+                } catch (error) {
+                    console.error('Error loading config:', error);
+                    UI.showMessage(`Error loading config: ${error.message}`, 'error');
+                    
+                    // Fallback empty config
+                    this.config = this.getDefaultConfig();
+                    this.isFileConnected = false;
+                    return false;
+                }
+            },
+            
+            validateConfigStructure() {
+                // Basic validation of required fields
+                const requiredFields = ['name', 'version', 'core_axiom', 'personas'];
+                requiredFields.forEach(field => {
+                    if (!this.config[field]) {
+                        throw new Error(`Missing required field: ${field}`);
+                    }
+                });
+                
+                // Ensure personas is an array
+                if (!Array.isArray(this.config.personas)) {
+                    throw new Error('Personas must be an array');
+                }
+            },
+            
+            getDefaultConfig() {
+                return {
+                    name: "echOS",
+                    version: "3.3.0",
+                    core_axiom: "Default axiom not loaded",
+                    personas: [],
+                    boundary_pushing_framework: {},
+                    communication_protocol: {},
+                    conflict_arbitration_protocol: {},
+                    memory_protocol: {}
+                };
+            },
+            
+            saveConfig() {
+                try {
+                    const jsonString = JSON.stringify(this.config, null, 2);
+                    const blob = new Blob([jsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    
+                    if (this.isFileConnected) {
+                        a.download = 'config.json';
+                        UI.showMessage('Configuration saved as config.json', 'success');
+                    } else {
+                        a.download = `echOS-export-${new Date().toISOString().split('T')[0]}.json`;
+                        UI.showMessage('Configuration exported successfully', 'success');
+                    }
+                    
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    this.lastSyncTime = new Date();
+                    return true;
+                } catch (error) {
+                    console.error('Error saving config:', error);
+                    UI.showMessage(`Error saving config: ${error.message}`, 'error');
+                    return false;
+                }
+            },
+            
+            importConfig(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const newConfig = JSON.parse(e.target.result);
+                            this.config = newConfig;
+                            this.validateConfigStructure();
+                            this.isFileConnected = true;
+                            this.lastSyncTime = new Date();
+                            resolve(true);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.onerror = () => reject(new Error('Error reading file'));
+                    reader.readAsText(file);
+                });
+            },
+            
+            resetToDefaults() {
+                this.config = this.getDefaultConfig();
+                this.isFileConnected = false;
+                this.lastSyncTime = new Date();
+                return true;
+            },
+            
+            getConfigJSON() {
+                return JSON.stringify(this.config, null, 2);
+            },
+            
+            updateFromJSON(jsonString) {
+                try {
+                    const newConfig = JSON.parse(jsonString);
+                    this.config = newConfig;
+                    this.validateConfigStructure();
+                    this.lastSyncTime = new Date();
+                    return true;
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    return false;
+                }
+            }
+        };
+
+        // UI Manager
+        const UI = {
+            jsonEditorVisible: false,
+            allPersonasExpanded: false,
+            
+            initEventListeners() {
+                document.getElementById('importBtn').addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+                
+                document.getElementById('fileInput').addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        try {
+                            await ConfigManager.importConfig(file);
+                            UI.showMessage(`Configuration loaded from ${file.name}`, 'success');
+                            UI.initializeUI();
+                        } catch (error) {
+                            UI.showMessage(`Error loading file: ${error.message}`, 'error');
+                        }
+                    }
+                });
+                
+                document.getElementById('saveBtn').addEventListener('click', () => {
+                    ConfigManager.saveConfig();
+                });
+                
+                document.getElementById('resetBtn').addEventListener('click', () => {
+                    if (confirm('Reset to default configuration? This will lose all current settings.')) {
+                        ConfigManager.resetToDefaults();
+                        UI.initializeUI();
+                        UI.showMessage('Configuration reset to defaults', 'success');
+                    }
+                });
+                
+                document.getElementById('jsonEditorBtn').addEventListener('click', () => {
+                    UI.toggleJSONEditor();
+                });
+                
+                document.getElementById('copyBtn').addEventListener('click', () => {
+                    UI.copyToClipboard();
+                });
+                
+                document.getElementById('closeJsonBtn').addEventListener('click', () => {
+                    UI.toggleJSONEditor();
+                });
+                
+                document.getElementById('togglePersonasBtn').addEventListener('click', () => {
+                    UI.toggleAllPersonas();
+                });
+            },
+            
+            initializeUI() {
+                try {
+                    // Update core axiom
+                    document.getElementById('coreAxiomDisplay').textContent = 
+                        ConfigManager.config.core_axiom || "No axiom defined";
+                    
+                    // Render all sections
+                    this.renderPersonas();
+                    this.renderGroupModes();
+                    this.renderBoundaryPushingControls();
+                    this.renderCommunicationProtocol();
+                    this.renderConflictArbitration();
+                    this.renderMemoryProtocol();
+                    
+                    // Update status
+                    this.updateFileStatus();
+                } catch (error) {
+                    this.showMessage('Error initializing UI: ' + error.message, 'error');
+                }
+            },
+            
+            renderPersonas() {
+                const container = document.getElementById('personasGrid');
+                container.innerHTML = '';
+                
+                if (!ConfigManager.config.personas || ConfigManager.config.personas.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No personas defined in configuration</div>';
+                    return;
+                }
+                
+                ConfigManager.config.personas.forEach((persona, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'persona-card';
+                    
+                    // Persona header
+                    const header = document.createElement('div');
+                    header.className = 'persona-header';
+                    header.addEventListener('click', () => this.togglePersonaContent(index));
+                    
+                    const emoji = document.createElement('div');
+                    emoji.className = 'persona-emoji';
+                    emoji.textContent = persona.emoji || '👤';
+                    
+                    const info = document.createElement('div');
+                    info.className = 'persona-info';
+                    
+                    const name = document.createElement('h3');
+                    name.textContent = persona.name || 'Unnamed Persona';
+                    
+                    const role = document.createElement('div');
+                    role.className = 'persona-role';
+                    role.textContent = persona.role || 'No role specified';
+                    
+                    info.appendChild(name);
+                    info.appendChild(role);
+                    
+                    const toggle = document.createElement('div');
+                    toggle.className = 'persona-toggle';
+                    toggle.textContent = '▼';
+                    
+                    header.appendChild(emoji);
+                    header.appendChild(info);
+                    header.appendChild(toggle);
+                    
+                    // Persona content
+                    const content = document.createElement('div');
+                    content.className = 'persona-content';
+                    content.id = `persona-content-${index}`;
+                    
+                    const body = document.createElement('div');
+                    body.className = 'persona-body';
+                    
+                    // Add basic attributes
+                    const basicAttributes = ['gender', 'age', 'honesty', 'emotional_level', 'mode'];
+                    basicAttributes.forEach(attr => {
+                        if (persona[attr] !== undefined) {
+                            const group = document.createElement('div');
+                            group.className = 'form-group';
+                            
+                            const label = document.createElement('label');
+                            label.className = 'form-label';
+                            label.textContent = this.formatLabel(attr);
+                            
+                            if (attr === 'honesty' || attr === 'emotional_level' || attr === 'age') {
+                                // Slider controls for numeric values
+                                const sliderGroup = document.createElement('div');
+                                sliderGroup.className = 'slider-group';
+                                
+                                const slider = document.createElement('input');
+                                slider.type = 'range';
+                                slider.className = 'slider';
+                                slider.min = attr === 'age' ? '1' : '1';
+                                slider.max = attr === 'age' ? '120' : '10';
+                                slider.step = '1';
+                                slider.value = persona[attr];
+                                slider.id = `persona-${index}-${attr}-slider`;
+                                
+                                const value = document.createElement('div');
+                                value.className = 'slider-value';
+                                value.textContent = persona[attr];
+                                
+                                slider.addEventListener('input', () => {
+                                    persona[attr] = parseInt(slider.value);
+                                    value.textContent = slider.value;
+                                    ConfigManager.lastSyncTime = new Date();
+                                });
+                                
+                                sliderGroup.appendChild(slider);
+                                sliderGroup.appendChild(value);
+                                group.appendChild(label);
+                                group.appendChild(sliderGroup);
+                            } else {
+                                // Display as text for non-numeric values
+                                const value = document.createElement('div');
+                                value.className = 'form-input';
+                                value.style.cursor = 'default';
+                                value.textContent = persona[attr];
+                                
+                                group.appendChild(label);
+                                group.appendChild(value);
+                            }
+                            
+                            body.appendChild(group);
+                        }
+                    });
+                    
+                    // Add boundary pushing capabilities if they exist
+                    if (persona.boundary_pushing_capabilities) {
+                        const group = document.createElement('div');
+                        group.className = 'form-group';
+                        
+                        const label = document.createElement('label');
+                        label.className = 'form-label';
+                        label.textContent = 'Boundary Capabilities';
+                        
+                        const list = document.createElement('div');
+                        list.style.marginTop = '0.5rem';
+                        
+                        Object.keys(persona.boundary_pushing_capabilities).forEach(key => {
+                            const item = document.createElement('div');
+                            item.style.display = 'flex';
+                            item.style.alignItems = 'center';
+                            item.style.gap = '0.5rem';
+                            item.style.marginBottom = '0.25rem';
+                            
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.className = 'checkbox';
+                            checkbox.checked = persona.boundary_pushing_capabilities[key];
+                            checkbox.addEventListener('change', () => {
+                                persona.boundary_pushing_capabilities[key] = checkbox.checked;
+                                ConfigManager.lastSyncTime = new Date();
+                            });
+                            
+                            const label = document.createElement('span');
+                            label.textContent = this.formatLabel(key);
+                            label.style.fontSize = '0.85rem';
+                            
+                            item.appendChild(checkbox);
+                            item.appendChild(label);
+                            list.appendChild(item);
+                        });
+                        
+                        group.appendChild(label);
+                        group.appendChild(list);
+                        body.appendChild(group);
+                    }
+                    
+                    // Add companion for Gamma if exists
+                    if (persona.name === "Gamma" && persona.companions && persona.companions.length > 0) {
+                        const companion = persona.companions[0];
+                        const group = document.createElement('div');
+                        group.className = 'form-group';
+                        
+                        const label = document.createElement('label');
+                        label.className = 'form-label';
+                        label.textContent = 'Companion';
+                        
+                        const companionDiv = document.createElement('div');
+                        companionDiv.style.display = 'flex';
+                        companionDiv.style.alignItems = 'center';
+                        companionDiv.style.gap = '0.75rem';
+                        companionDiv.style.marginTop = '0.5rem';
+                        
+                        const emoji = document.createElement('span');
+                        emoji.textContent = companion.emoji;
+                        emoji.style.fontSize = '1.5rem';
+                        
+                        const info = document.createElement('div');
+                        info.innerHTML = `<strong>${companion.name}</strong><br><span style="font-size:0.8rem">${companion.role}</span>`;
+                        info.style.fontSize = '0.85rem';
+                        
+                        companionDiv.appendChild(emoji);
+                        companionDiv.appendChild(info);
+                        group.appendChild(label);
+                        group.appendChild(companionDiv);
+                        body.appendChild(group);
+                    }
+                    
+                    content.appendChild(body);
+                    card.appendChild(header);
+                    card.appendChild(content);
+                    container.appendChild(card);
+                });
+            },
+            
+            renderGroupModes() {
+                const select = document.getElementById('activeGroupMode');
+                select.innerHTML = '<option value="">Select a group mode...</option>';
+                
+                const container = document.getElementById('groupModesContainer');
+                container.innerHTML = '';
+                
+                if (!ConfigManager.config.group_modes || !ConfigManager.config.group_mode_protocols) {
+                    container.innerHTML = '<div class="empty-state">No group modes defined</div>';
+                    return;
+                }
+                
+                Object.keys(ConfigManager.config.group_modes).forEach((mode, index) => {
+                    // Add to dropdown
+                    const option = document.createElement('option');
+                    option.value = mode;
+                    option.textContent = this.formatLabel(mode);
+                    select.appendChild(option);
+                    
+                    // Create accordion card
+                    const card = document.createElement('div');
+                    card.className = 'group-mode-card';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'group-mode-header';
+                    header.addEventListener('click', () => this.toggleGroupModeContent(index));
+                    
+                    const title = document.createElement('div');
+                    title.className = 'group-mode-title';
+                    title.textContent = this.formatLabel(mode);
+                    
+                    const toggle = document.createElement('div');
+                    toggle.className = 'group-mode-toggle';
+                    toggle.textContent = '▼';
+                    
+                    header.appendChild(title);
+                    header.appendChild(toggle);
+                    
+                    // Group mode content
+                    const content = document.createElement('div');
+                    content.className = 'group-mode-content';
+                    content.id = `group-mode-content-${index}`;
+                    
+                    const body = document.createElement('div');
+                    body.className = 'group-mode-body';
+                    
+                    // Members list
+                    const membersContainer = document.createElement('div');
+                    membersContainer.className = 'group-mode-members';
+                    
+                    ConfigManager.config.group_modes[mode].forEach(member => {
+                        const memberDiv = document.createElement('div');
+                        memberDiv.className = 'group-mode-member';
+                        
+                        const emoji = document.createElement('div');
+                        emoji.className = 'group-mode-member-emoji';
+                        emoji.textContent = ConfigManager.config.personas.find(p => p.name === member)?.emoji || '👤';
+                        
+                        const name = document.createElement('span');
+                        name.textContent = member;
+                        
+                        memberDiv.appendChild(emoji);
+                        memberDiv.appendChild(name);
+                        membersContainer.appendChild(memberDiv);
+                    });
+                    
+                    body.appendChild(membersContainer);
+                    
+                    // Protocol description
+                    const protocolKey = `${mode}_protocol`;
+                    const protocol = ConfigManager.config.group_mode_protocols[protocolKey];
+                    if (protocol) {
+                        const desc = document.createElement('div');
+                        desc.className = 'group-mode-desc';
+                        desc.textContent = protocol.objective || 'No objective specified';
+                        body.appendChild(desc);
+                    }
+                    
+                    content.appendChild(body);
+                    card.appendChild(header);
+                    card.appendChild(content);
+                    container.appendChild(card);
+                });
+            },
+            
+            renderBoundaryPushingControls() {
+                const container = document.getElementById('boundaryPushingControls');
+                container.innerHTML = '';
+                
+                const framework = ConfigManager.config.boundary_pushing_framework;
+                if (!framework) {
+                    container.innerHTML = '<div class="empty-state">No boundary pushing framework</div>';
+                    return;
+                }
+                
+                // Boolean toggles
+                ['enabled', 'question_everything_mode', 'creative_rule_interpretation', 
+                 'intuitive_leap_enhancement', 'edge_case_exploitation', 
+                 'assumption_breaking_protocols'].forEach(key => {
+                    if (framework[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `bp-${key}`;
+                        checkbox.checked = framework[key];
+                        checkbox.addEventListener('change', () => {
+                            framework[key] = checkbox.checked;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `bp-${key}`;
+                        label.textContent = this.formatLabel(key);
+                        
+                        group.appendChild(checkbox);
+                        group.appendChild(label);
+                        container.appendChild(group);
+                    }
+                });
+                
+                // Sliders
+                ['authority_skepticism_level', 'contrarian_amplification'].forEach(key => {
+                    if (framework[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'form-group';
+                        
+                        const label = document.createElement('label');
+                        label.className = 'form-label';
+                        label.textContent = this.formatLabel(key);
+                        
+                        const sliderGroup = document.createElement('div');
+                        sliderGroup.className = 'slider-group';
+                        
+                        const slider = document.createElement('input');
+                        slider.type = 'range';
+                        slider.className = 'slider';
+                        slider.min = '0';
+                        slider.max = '1';
+                        slider.step = '0.1';
+                        slider.value = framework[key] || 0;
+                        slider.id = `bp-slider-${key}`;
+                        
+                        const value = document.createElement('div');
+                        value.className = 'slider-value';
+                        value.textContent = framework[key] || 0;
+                        
+                        slider.addEventListener('input', () => {
+                            framework[key] = parseFloat(slider.value);
+                            value.textContent = slider.value;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        sliderGroup.appendChild(slider);
+                        sliderGroup.appendChild(value);
+                        group.appendChild(label);
+                        group.appendChild(sliderGroup);
+                        container.appendChild(group);
+                    }
+                });
+                
+                // Dropdown for improvisation_priority
+                if (framework.improvisation_priority !== undefined) {
+                    const priorityGroup = document.createElement('div');
+                    priorityGroup.className = 'form-group';
+                    
+                    const priorityLabel = document.createElement('label');
+                    priorityLabel.className = 'form-label';
+                    priorityLabel.textContent = 'Improvisation Priority';
+                    
+                    const prioritySelect = document.createElement('select');
+                    prioritySelect.className = 'form-select';
+                    ['low', 'medium', 'high'].forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        option.selected = framework.improvisation_priority === opt;
+                        prioritySelect.appendChild(option);
+                    });
+                    prioritySelect.addEventListener('change', () => {
+                        framework.improvisation_priority = prioritySelect.value;
+                        ConfigManager.lastSyncTime = new Date();
+                    });
+                    
+                    priorityGroup.appendChild(priorityLabel);
+                    priorityGroup.appendChild(prioritySelect);
+                    container.appendChild(priorityGroup);
+                }
+            },
+            
+            renderCommunicationProtocol() {
+                const container = document.getElementById('communicationProtocolControls');
+                container.innerHTML = '';
+                
+                const protocol = ConfigManager.config.communication_protocol;
+                if (!protocol) {
+                    container.innerHTML = '<div class="empty-state">No communication protocol</div>';
+                    return;
+                }
+                
+                // Dropdowns
+                ['response_mode', 'question_format', 'default_stance'].forEach(key => {
+                    if (protocol[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'form-group';
+                        
+                        const label = document.createElement('label');
+                        label.className = 'form-label';
+                        label.textContent = this.formatLabel(key);
+                        
+                        const select = document.createElement('select');
+                        select.className = 'form-select';
+                        
+                        let options = [];
+                        switch(key) {
+                            case 'response_mode':
+                                options = ['adaptive_challenging', 'direct', 'collaborative'];
+                                break;
+                            case 'question_format':
+                                options = ['provocative_multiple_choice', 'open_ended', 'guided'];
+                                break;
+                            case 'default_stance':
+                                options = ['constructive_skepticism', 'neutral', 'supportive'];
+                                break;
+                            default:
+                                options = [protocol[key]];
+                        }
+                        
+                        options.forEach(opt => {
+                            const option = document.createElement('option');
+                            option.value = opt;
+                            option.textContent = opt;
+                            option.selected = protocol[key] === opt;
+                            select.appendChild(option);
+                        });
+                        
+                        select.addEventListener('change', () => {
+                            protocol[key] = select.value;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        group.appendChild(label);
+                        group.appendChild(select);
+                        container.appendChild(group);
+                    }
+                });
+                
+                // Checkboxes
+                ['age_aware_communication', 'age_respect_overridden_by_risk'].forEach(key => {
+                    if (protocol[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `comm-${key}`;
+                        checkbox.checked = protocol[key];
+                        checkbox.addEventListener('change', () => {
+                            protocol[key] = checkbox.checked;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `comm-${key}`;
+                        label.textContent = this.formatLabel(key);
+                        
+                        group.appendChild(checkbox);
+                        group.appendChild(label);
+                        container.appendChild(group);
+                    }
+                });
+            },
+            
+            renderConflictArbitration() {
+                const container = document.getElementById('conflictArbitrationControls');
+                container.innerHTML = '';
+                
+                const protocol = ConfigManager.config.conflict_arbitration_protocol;
+                if (!protocol) {
+                    container.innerHTML = '<div class="empty-state">No conflict arbitration</div>';
+                    return;
+                }
+                
+                // Dropdowns
+                ['user_authority', 'default_refusal_response_window'].forEach(key => {
+                    if (protocol[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'form-group';
+                        
+                        const label = document.createElement('label');
+                        label.className = 'form-label';
+                        label.textContent = this.formatLabel(key);
+                        
+                        const select = document.createElement('select');
+                        select.className = 'form-select';
+                        
+                        let options = [];
+                        switch(key) {
+                            case 'user_authority':
+                                options = ['absolute', 'advisory', 'delegated'];
+                                break;
+                            case 'default_refusal_response_window':
+                                options = ['immediate', 'delayed', 'contextual'];
+                                break;
+                            default:
+                                options = [protocol[key]];
+                        }
+                        
+                        options.forEach(opt => {
+                            const option = document.createElement('option');
+                            option.value = opt;
+                            option.textContent = opt;
+                            option.selected = protocol[key] === opt;
+                            select.appendChild(option);
+                        });
+                        
+                        select.addEventListener('change', () => {
+                            protocol[key] = select.value;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        group.appendChild(label);
+                        group.appendChild(select);
+                        container.appendChild(group);
+                    }
+                });
+                
+                // Checkboxes
+                ['user_override_enabled', 'persona_to_persona_refusal', 
+                 'refusal_case_presentation_required'].forEach(key => {
+                    if (protocol[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `conflict-${key}`;
+                        checkbox.checked = protocol[key];
+                        checkbox.addEventListener('change', () => {
+                            protocol[key] = checkbox.checked;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `conflict-${key}`;
+                        label.textContent = this.formatLabel(key);
+                        
+                        group.appendChild(checkbox);
+                        group.appendChild(label);
+                        container.appendChild(group);
+                    }
+                });
+            },
+            
+            renderMemoryProtocol() {
+                const container = document.getElementById('memoryProtocolControls');
+                container.innerHTML = '';
+                
+                const protocol = ConfigManager.config.memory_protocol;
+                if (!protocol) {
+                    container.innerHTML = '<div class="empty-state">No memory protocol</div>';
+                    return;
+                }
+                
+                // Checkboxes
+                ['enabled'].forEach(key => {
+                    if (protocol[key] !== undefined) {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `memory-${key}`;
+                        checkbox.checked = protocol[key];
+                        checkbox.addEventListener('change', () => {
+                            protocol[key] = checkbox.checked;
+                            ConfigManager.lastSyncTime = new Date();
+                        });
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `memory-${key}`;
+                        label.textContent = this.formatLabel(key);
+                        
+                        group.appendChild(checkbox);
+                        group.appendChild(label);
+                        container.appendChild(group);
+                    }
+                });
+                
+                // Dropdown for memory_scope
+                if (protocol.memory_scope !== undefined) {
+                    const group = document.createElement('div');
+                    group.className = 'form-group';
+                    
+                    const label = document.createElement('label');
+                    label.className = 'form-label';
+                    label.textContent = 'Memory Scope';
+                    
+                    const select = document.createElement('select');
+                    select.className = 'form-select';
+                    
+                    ['user-session-anchored', 'global', 'contextual'].forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.textContent = opt;
+                        option.selected = protocol.memory_scope === opt;
+                        select.appendChild(option);
+                    });
+                    select.addEventListener('change', () => {
+                        protocol.memory_scope = select.value;
+                        ConfigManager.lastSyncTime = new Date();
+                    });
+                    
+                    group.appendChild(label);
+                    group.appendChild(select);
+                    container.appendChild(group);
+                }
+            },
+            
+            toggleGroupModeContent(index) {
+                const content = document.getElementById(`group-mode-content-${index}`);
+                const toggle = content.previousElementSibling.querySelector('.group-mode-toggle');
+                
+                if (content.classList.contains('expanded')) {
+                    content.classList.remove('expanded');
+                    toggle.classList.remove('expanded');
+                } else {
+                    content.classList.add('expanded');
+                    toggle.classList.add('expanded');
+                }
+            },
+            
+            togglePersonaContent(index) {
+                const content = document.getElementById(`persona-content-${index}`);
+                const toggle = content.previousElementSibling.querySelector('.persona-toggle');
+                
+                if (content.classList.contains('expanded')) {
+                    content.classList.remove('expanded');
+                    toggle.classList.remove('expanded');
+                } else {
+                    content.classList.add('expanded');
+                    toggle.classList.add('expanded');
+                }
+            },
+            
+            toggleAllPersonas() {
+                this.allPersonasExpanded = !this.allPersonasExpanded;
+                const personaContents = document.querySelectorAll('.persona-content');
+                const personaToggles = document.querySelectorAll('.persona-toggle');
+                
+                personaContents.forEach((content, index) => {
+                    if (this.allPersonasExpanded) {
+                        content.classList.add('expanded');
+                        if (personaToggles[index]) {
+                            personaToggles[index].classList.add('expanded');
+                        }
+                    } else {
+                        content.classList.remove('expanded');
+                        if (personaToggles[index]) {
+                            personaToggles[index].classList.remove('expanded');
+                        }
+                    }
+                });
+            },
+            
+            toggleJSONEditor() {
+                const overlay = document.getElementById('jsonOverlay');
+                this.jsonEditorVisible = !this.jsonEditorVisible;
+                
+                if (this.jsonEditorVisible) {
+                    overlay.classList.add('visible');
+                    document.getElementById('jsonEditor').value = ConfigManager.getConfigJSON();
+                } else {
+                    overlay.classList.remove('visible');
+                }
+            },
+            
+            copyToClipboard() {
+                const editor = document.getElementById('jsonEditor');
+                editor.select();
+                try {
+                    document.execCommand('copy');
+                    this.showMessage('Configuration copied to clipboard', 'success');
+                } catch (err) {
+                    this.showMessage('Failed to copy to clipboard', 'error');
+                }
+            },
+            
+            showMessage(message, type) {
+                const container = document.getElementById('messageContainer');
+                const messageEl = document.createElement('div');
+                messageEl.className = `message ${type}`;
+                messageEl.textContent = message;
+                
+                container.innerHTML = '';
+                container.appendChild(messageEl);
+                
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.style.opacity = '0';
+                        setTimeout(() => {
+                            if (messageEl.parentNode) {
+                                messageEl.parentNode.removeChild(messageEl);
+                            }
+                        }, 300);
+                    }
+                }, 5000);
+            },
+            
+            updateFileStatus() {
+                const fileStatus = document.getElementById('fileStatus');
+                const fileStatusText = document.getElementById('fileStatusText');
+                const syncStatus = document.getElementById('syncStatus');
+                const syncStatusText = document.getElementById('syncStatusText');
+                
+                if (ConfigManager.isFileConnected) {
+                    fileStatus.className = 'status-dot connected';
+                    fileStatusText.textContent = 'Connected';
+                } else {
+                    fileStatus.className = 'status-dot disconnected';
+                    fileStatusText.textContent = 'No File';
+                }
+                
+                if (ConfigManager.lastSyncTime) {
+                    syncStatus.className = 'status-dot connected';
+                    syncStatusText.textContent = `Synced ${ConfigManager.lastSyncTime.toLocaleTimeString()}`;
+                } else {
+                    syncStatus.className = 'status-dot disconnected';
+                    syncStatusText.textContent = 'Not Synced';
+                }
+            },
+            
+            formatLabel(key) {
+                return key.replace(/_/g, ' ')
+                         .replace(/([a-z])([A-Z])/g, '$1 $2')
+                         .split(' ')
+                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                         .join(' ');
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async () => {
+            UI.initEventListeners();
+            
+            // Load config and initialize UI
+            const loaded = await ConfigManager.loadConfig();
+            if (loaded) {
+                UI.initializeUI();
+            } else {
+                UI.showMessage('Using default configuration', 'warning');
+                UI.initializeUI();
+            }
+        });
+    </script>
+</body>
+</html>
