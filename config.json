@@ -714,5 +714,9 @@
     "enabled": false,
     "description": "Reserved for future protocol integrations",
     "security_clearance_required": true
+  },
+  "urls": {
+    "repository": "https://github.com/sudofx/echOS",
+    "web_config_tool": "https://sudofx.github.io/echOS/"
   }
 }
