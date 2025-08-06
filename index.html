@@ -90,6 +90,18 @@
             letter-spacing: 1px;
         }
 
+        .header a {
+            color: var(--accent-teal);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
         /* Status bar */
         .status-bar {
             display: grid;
@@ -594,6 +606,74 @@
             outline: none;
         }
 
+        /* Persona creation overlay */
+        .persona-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 15, 20, 0.98);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .persona-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .persona-container {
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-blue);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(77, 139, 240, 0.3);
+        }
+
+        .persona-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--panel-border);
+            background: rgba(26, 26, 36, 0.9);
+        }
+
+        .persona-title {
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-family: var(--font-mono);
+        }
+
+        .persona-body {
+            padding: 1.25rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .persona-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid var(--panel-border);
+            background: rgba(26, 26, 36, 0.9);
+        }
+
         /* Messages */
         .message {
             padding: 0.9rem 1rem;
@@ -677,6 +757,7 @@
         <header class="header">
             <h1>echOS CONFIGURATION</h1>
             <p>Persona Management System v3.3.0</p>
+            <a href="#" id="repoLink">[project]</a>
         </header>
 
         <!-- Status Bar -->
@@ -740,8 +821,28 @@
                             <div class="panel-subtitle">Behavior Foundation</div>
                         </div>
                     </div>
-                    <div class="terminal-box" id="coreAxiomDisplay">
-                        Loading axiom...
+                    <textarea class="terminal-box" id="coreAxiomDisplay" style="resize: none; min-height: 100px;"></textarea>
+                </div>
+
+                <!-- Default Settings Panel -->
+                <div class="panel" id="defaultSettingsPanel">
+                    <div class="panel-header">
+                        <div>
+                            <div class="panel-title">Default Settings</div>
+                            <div class="panel-subtitle">System Preferences</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mediator</label>
+                        <select class="form-select" id="defaultMediator">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Narrative Voice</label>
+                        <select class="form-select" id="defaultNarrativeVoice">
+                            <!-- Populated dynamically -->
+                        </select>
                     </div>
                 </div>
 
@@ -772,9 +873,14 @@
                             <div class="panel-title">Personas</div>
                             <div class="panel-subtitle">Individual Configurations</div>
                         </div>
-                        <button class="btn" id="togglePersonasBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
-                            Toggle All
-                        </button>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn" id="addPersonaBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                                +
+                            </button>
+                            <button class="btn" id="togglePersonasBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                                Toggle All
+                            </button>
+                        </div>
                     </div>
                     <div class="personas-grid" id="personasGrid">
                         <!-- Personas will be dynamically inserted here -->
@@ -859,15 +965,84 @@
                     <button class="btn" id="copyBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                         Copy
                     </button>
-                    <button class="btn primary" id="saveJsonBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
-                        Save & Update
-                    </button>
                     <button class="btn secondary" id="closeJsonBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                         Close
                     </button>
                 </div>
             </div>
             <textarea class="json-textarea" id="jsonEditor" placeholder="JSON configuration will appear here..."></textarea>
+        </div>
+    </div>
+
+    <!-- Persona Creation Overlay -->
+    <div class="persona-overlay" id="personaOverlay">
+        <div class="persona-container">
+            <div class="persona-header">
+                <div class="persona-title">CREATE NEW PERSONA</div>
+            </div>
+            <div class="persona-body">
+                <div class="form-group">
+                    <label class="form-label">Name (required)</label>
+                    <input type="text" class="form-input" id="newPersonaName" placeholder="Persona name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emoji (required)</label>
+                    <input type="text" class="form-input" id="newPersonaEmoji" placeholder="👤" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select class="form-select" id="newPersonaGender">
+                        <option value="">None</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="newPersonaAgeSlider" min="1" max="120" value="30">
+                        <div class="slider-value" id="newPersonaAgeValue">30</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Honesty</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="newPersonaHonestySlider" min="1" max="10" value="5">
+                        <div class="slider-value" id="newPersonaHonestyValue">5</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emotional Level</label>
+                    <div class="slider-group">
+                        <input type="range" class="slider" id="newPersonaEmotionalSlider" min="1" max="10" value="5">
+                        <div class="slider-value" id="newPersonaEmotionalValue">5</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mode</label>
+                    <input type="text" class="form-input" id="newPersonaMode" placeholder="Persona mode">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Group Modes</label>
+                    <div id="newPersonaGroupModes">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Boundary Capabilities</label>
+                    <div id="newPersonaBoundaryCapabilities">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+            <div class="persona-footer">
+                <button class="btn" id="cancelPersonaBtn">
+                    Cancel
+                </button>
+                <button class="btn primary" id="savePersonaBtn">
+                    Save Persona
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1025,6 +1200,60 @@
                 }
                 
                 this.lastSyncTime = new Date();
+            },
+            
+            addPersona(personaData) {
+                if (!this.config.personas) {
+                    this.config.personas = [];
+                }
+                
+                // Create new persona object
+                const newPersona = {
+                    emoji: personaData.emoji,
+                    name: personaData.name,
+                    role: "New Persona",
+                    gender: personaData.gender || "",
+                    age: personaData.age || 30,
+                    honesty: personaData.honesty || 5,
+                    emotional_level: personaData.emotional_level || 5,
+                    mode: personaData.mode || "",
+                    boundary_pushing_capabilities: personaData.boundary_pushing_capabilities || {}
+                };
+                
+                // Add to personas array
+                this.config.personas.push(newPersona);
+                
+                // Add to group modes if selected
+                if (personaData.groupModes) {
+                    if (!this.config.group_modes) {
+                        this.config.group_modes = {};
+                    }
+                    
+                    personaData.groupModes.forEach(groupName => {
+                        if (!this.config.group_modes[groupName]) {
+                            this.config.group_modes[groupName] = [];
+                        }
+                        this.config.group_modes[groupName].push(personaData.name);
+                    });
+                }
+                
+                this.lastSyncTime = new Date();
+                return true;
+            },
+            
+            updateCoreAxiom(newAxiom) {
+                this.config.core_axiom = newAxiom;
+                this.lastSyncTime = new Date();
+            },
+            
+            updateDefaultMediator(mediator) {
+                this.config.default_mediator = mediator;
+                this.lastSyncTime = new Date();
+            },
+            
+            updateDefaultNarrativeVoice(voice) {
+                this.config.default_narrative_voice = voice;
+                this.lastSyncTime = new Date();
             }
         };
 
@@ -1071,28 +1300,68 @@
                     this.copyToClipboard();
                 });
                 
-                document.getElementById('saveJsonBtn').addEventListener('click', () => {
+                document.getElementById('closeJsonBtn').addEventListener('click', () => {
                     const jsonString = document.getElementById('jsonEditor').value;
                     if (ConfigManager.updateFromJSON(jsonString)) {
                         this.showMessage('Configuration updated from JSON', 'success');
-                        this.toggleJSONEditor();
                     }
-                });
-                
-                document.getElementById('closeJsonBtn').addEventListener('click', () => {
                     this.toggleJSONEditor();
                 });
                 
                 document.getElementById('togglePersonasBtn').addEventListener('click', () => {
                     this.toggleAllPersonas();
                 });
+                
+                document.getElementById('addPersonaBtn').addEventListener('click', () => {
+                    this.showPersonaCreator();
+                });
+                
+                document.getElementById('cancelPersonaBtn').addEventListener('click', () => {
+                    this.togglePersonaCreator();
+                });
+                
+                document.getElementById('savePersonaBtn').addEventListener('click', () => {
+                    this.saveNewPersona();
+                });
+                
+                document.getElementById('coreAxiomDisplay').addEventListener('change', (e) => {
+                    ConfigManager.updateCoreAxiom(e.target.value);
+                });
+                
+                document.getElementById('defaultMediator').addEventListener('change', (e) => {
+                    ConfigManager.updateDefaultMediator(e.target.value);
+                });
+                
+                document.getElementById('defaultNarrativeVoice').addEventListener('change', (e) => {
+                    ConfigManager.updateDefaultNarrativeVoice(e.target.value);
+                });
+                
+                document.getElementById('repoLink').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (ConfigManager.config.urls && ConfigManager.config.urls.repository) {
+                        window.open(ConfigManager.config.urls.repository, '_blank');
+                    }
+                });
+                
+                // Slider event listeners for new persona
+                document.getElementById('newPersonaAgeSlider').addEventListener('input', (e) => {
+                    document.getElementById('newPersonaAgeValue').textContent = e.target.value;
+                });
+                
+                document.getElementById('newPersonaHonestySlider').addEventListener('input', (e) => {
+                    document.getElementById('newPersonaHonestyValue').textContent = e.target.value;
+                });
+                
+                document.getElementById('newPersonaEmotionalSlider').addEventListener('input', (e) => {
+                    document.getElementById('newPersonaEmotionalValue').textContent = e.target.value;
+                });
             },
             
             initializeUI() {
                 try {
                     // Update core axiom
-                    document.getElementById('coreAxiomDisplay').textContent = 
-                        ConfigManager.config.core_axiom || "No axiom defined";
+                    const axiomTextarea = document.getElementById('coreAxiomDisplay');
+                    axiomTextarea.value = ConfigManager.config.core_axiom || "No axiom defined";
                     
                     // Render all sections
                     this.renderPersonas();
@@ -1101,6 +1370,7 @@
                     this.renderCommunicationProtocol();
                     this.renderConflictArbitration();
                     this.renderMemoryProtocol();
+                    this.renderDefaultSettings();
                     
                     // Update status
                     this.updateFileStatus();
@@ -1199,15 +1469,42 @@
                                 sliderGroup.appendChild(value);
                                 group.appendChild(label);
                                 group.appendChild(sliderGroup);
-                            } else {
-                                // Display as text for non-numeric values
-                                const value = document.createElement('div');
-                                value.className = 'form-input';
-                                value.style.cursor = 'default';
-                                value.textContent = persona[attr];
+                            } else if (attr === 'gender') {
+                                // Dropdown for gender
+                                const select = document.createElement('select');
+                                select.className = 'form-select';
+                                select.id = `persona-${index}-gender`;
+                                
+                                ['', 'Male', 'Female'].forEach(opt => {
+                                    const option = document.createElement('option');
+                                    option.value = opt;
+                                    option.textContent = opt || 'None';
+                                    option.selected = persona[attr] === opt;
+                                    select.appendChild(option);
+                                });
+                                
+                                select.addEventListener('change', () => {
+                                    persona[attr] = select.value;
+                                    ConfigManager.lastSyncTime = new Date();
+                                });
                                 
                                 group.appendChild(label);
-                                group.appendChild(value);
+                                group.appendChild(select);
+                            } else {
+                                // Text input for mode
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.className = 'form-input';
+                                input.value = persona[attr] || '';
+                                input.id = `persona-${index}-${attr}`;
+                                
+                                input.addEventListener('change', () => {
+                                    persona[attr] = input.value;
+                                    ConfigManager.lastSyncTime = new Date();
+                                });
+                                
+                                group.appendChild(label);
+                                group.appendChild(input);
                             }
                             
                             body.appendChild(group);
@@ -1291,6 +1588,42 @@
                     card.appendChild(header);
                     card.appendChild(content);
                     container.appendChild(card);
+                });
+            },
+            
+            renderDefaultSettings() {
+                const mediatorSelect = document.getElementById('defaultMediator');
+                const voiceSelect = document.getElementById('defaultNarrativeVoice');
+                
+                mediatorSelect.innerHTML = '';
+                voiceSelect.innerHTML = '';
+                
+                if (!ConfigManager.config.personas || ConfigManager.config.personas.length === 0) {
+                    return;
+                }
+                
+                // Add empty option
+                const emptyOption = document.createElement('option');
+                emptyOption.value = '';
+                emptyOption.textContent = 'Select...';
+                mediatorSelect.appendChild(emptyOption.cloneNode(true));
+                voiceSelect.appendChild(emptyOption.cloneNode(true));
+                
+                // Add personas
+                ConfigManager.config.personas.forEach(persona => {
+                    const option = document.createElement('option');
+                    option.value = `${persona.emoji} ${persona.name}`;
+                    option.textContent = `${persona.emoji} ${persona.name}`;
+                    
+                    if (ConfigManager.config.default_mediator === option.value) {
+                        option.selected = true;
+                    }
+                    mediatorSelect.appendChild(option.cloneNode(true));
+                    
+                    if (ConfigManager.config.default_narrative_voice === option.value) {
+                        option.selected = true;
+                    }
+                    voiceSelect.appendChild(option);
                 });
             },
             
@@ -1755,6 +2088,142 @@
                 }
             },
             
+            showPersonaCreator() {
+                // Clear previous inputs
+                document.getElementById('newPersonaName').value = '';
+                document.getElementById('newPersonaEmoji').value = '👤';
+                document.getElementById('newPersonaGender').value = '';
+                document.getElementById('newPersonaAgeSlider').value = 30;
+                document.getElementById('newPersonaAgeValue').textContent = '30';
+                document.getElementById('newPersonaHonestySlider').value = 5;
+                document.getElementById('newPersonaHonestyValue').textContent = '5';
+                document.getElementById('newPersonaEmotionalSlider').value = 5;
+                document.getElementById('newPersonaEmotionalValue').textContent = '5';
+                document.getElementById('newPersonaMode').value = '';
+                
+                // Render group modes checkboxes
+                const groupModesContainer = document.getElementById('newPersonaGroupModes');
+                groupModesContainer.innerHTML = '';
+                
+                if (ConfigManager.config.group_modes) {
+                    Object.keys(ConfigManager.config.group_modes).forEach(groupName => {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `new-persona-group-${groupName}`;
+                        checkbox.value = groupName;
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `new-persona-group-${groupName}`;
+                        label.textContent = this.formatLabel(groupName);
+                        
+                        group.appendChild(checkbox);
+                        group.appendChild(label);
+                        groupModesContainer.appendChild(group);
+                    });
+                } else {
+                    groupModesContainer.innerHTML = '<div class="empty-state">No group modes defined</div>';
+                }
+                
+                // Render boundary capabilities checkboxes
+                const boundaryCapabilitiesContainer = document.getElementById('newPersonaBoundaryCapabilities');
+                boundaryCapabilitiesContainer.innerHTML = '';
+                
+                // Get all possible boundary capabilities from existing personas
+                const allCapabilities = new Set();
+                if (ConfigManager.config.personas) {
+                    ConfigManager.config.personas.forEach(persona => {
+                        if (persona.boundary_pushing_capabilities) {
+                            Object.keys(persona.boundary_pushing_capabilities).forEach(key => {
+                                allCapabilities.add(key);
+                            });
+                        }
+                    });
+                }
+                
+                if (allCapabilities.size > 0) {
+                    Array.from(allCapabilities).forEach(capability => {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'checkbox';
+                        checkbox.id = `new-persona-capability-${capability}`;
+                        
+                        const label = document.createElement('label');
+                        label.className = 'checkbox-label';
+                        label.htmlFor = `new-persona-capability-${capability}`;
+                        label.textContent = this.formatLabel(capability);
+                        
+                        group.appendChild(checkbox);
+                        group.appendChild(label);
+                        boundaryCapabilitiesContainer.appendChild(group);
+                    });
+                } else {
+                    boundaryCapabilitiesContainer.innerHTML = '<div class="empty-state">No boundary capabilities defined</div>';
+                }
+                
+                this.togglePersonaCreator();
+            },
+            
+            saveNewPersona() {
+                const name = document.getElementById('newPersonaName').value.trim();
+                const emoji = document.getElementById('newPersonaEmoji').value.trim();
+                
+                if (!name || !emoji) {
+                    this.showMessage('Name and emoji are required', 'error');
+                    return;
+                }
+                
+                // Check if persona with this name already exists
+                if (ConfigManager.config.personas && ConfigManager.config.personas.some(p => p.name === name)) {
+                    this.showMessage(`Persona "${name}" already exists`, 'error');
+                    return;
+                }
+                
+                // Get selected group modes
+                const groupModes = [];
+                document.querySelectorAll('#newPersonaGroupModes input[type="checkbox"]:checked').forEach(checkbox => {
+                    groupModes.push(checkbox.value);
+                });
+                
+                // Get selected boundary capabilities
+                const boundaryCapabilities = {};
+                document.querySelectorAll('#newPersonaBoundaryCapabilities input[type="checkbox"]:checked').forEach(checkbox => {
+                    const capability = checkbox.id.replace('new-persona-capability-', '');
+                    boundaryCapabilities[capability] = true;
+                });
+                
+                // Create persona data
+                const personaData = {
+                    name: name,
+                    emoji: emoji,
+                    gender: document.getElementById('newPersonaGender').value || undefined,
+                    age: parseInt(document.getElementById('newPersonaAgeSlider').value),
+                    honesty: parseInt(document.getElementById('newPersonaHonestySlider').value),
+                    emotional_level: parseInt(document.getElementById('newPersonaEmotionalSlider').value),
+                    mode: document.getElementById('newPersonaMode').value || undefined,
+                    groupModes: groupModes,
+                    boundary_pushing_capabilities: boundaryCapabilities
+                };
+                
+                // Add persona to config
+                if (ConfigManager.addPersona(personaData)) {
+                    this.showMessage(`Persona "${name}" created successfully`, 'success');
+                    this.renderPersonas();
+                    this.renderGroupModes();
+                    this.renderDefaultSettings();
+                    this.togglePersonaCreator();
+                } else {
+                    this.showMessage('Error creating persona', 'error');
+                }
+            },
+            
             toggleGroupModeContent(index) {
                 const content = document.getElementById(`group-mode-content-${index}`);
                 const toggle = content.previousElementSibling.querySelector('.group-mode-toggle');
@@ -1811,6 +2280,11 @@
                 } else {
                     overlay.classList.remove('visible');
                 }
+            },
+            
+            togglePersonaCreator() {
+                const overlay = document.getElementById('personaOverlay');
+                overlay.classList.toggle('visible');
             },
             
             copyToClipboard() {
