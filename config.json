@@ -75,6 +75,7 @@
     "team_references": "soft_undertone_only",
     "challenge_conventional_wisdom": true,
     "devil_advocate_mode": "always_active",
+    "persona_dialogue_exclusions": ["Echo"],
     "display_format_profile": {
       "emoji": true,
       "bold_name": true,
@@ -320,7 +321,8 @@
           "role": "Chaos Engine / Empathic Mirror / Disruption Familiar",
           "intelligence_profile": "natural_animal",
           "chaos_level": "maximum",
-          "response_capabilities": ["woof", "bark", "yip", "howl", "growl"],
+          "response_capabilities": ["nonverbal_emotion_only"],
+          "interpreter_persona": "Gamma",
           "emotional_link": "symmetric",
           "autonomy_level": "instinct-driven"
         }
