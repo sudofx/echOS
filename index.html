@@ -71,6 +71,7 @@
             text-align: center;
             border: 1px solid var(--panel-border);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
         }
 
         .header h1 {
@@ -206,6 +207,7 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-bottom: 8px;
         }
 
         .panel-header {
@@ -651,6 +653,11 @@
             .control-section {
                 grid-template-columns: 1fr 1fr;
             }
+
+            /* System protocols panels stack vertically on mobile */
+            .content-area > .panel > div {
+                grid-template-columns: 1fr !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -852,6 +859,9 @@
                     <button class="btn" id="copyBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                         Copy
                     </button>
+                    <button class="btn primary" id="saveJsonBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                        Save & Update
+                    </button>
                     <button class="btn secondary" id="closeJsonBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                         Close
                     </button>
@@ -986,9 +996,11 @@
                     this.config = newConfig;
                     this.validateConfigStructure();
                     this.lastSyncTime = new Date();
+                    UI.initializeUI(); // Refresh the UI with new config
                     return true;
                 } catch (error) {
                     console.error('Error parsing JSON:', error);
+                    UI.showMessage('Error parsing JSON: ' + error.message, 'error');
                     return false;
                 }
             },
@@ -1032,7 +1044,7 @@
                         try {
                             await ConfigManager.importConfig(file);
                             UI.showMessage(`Configuration loaded from ${file.name}`, 'success');
-                            UI.initializeUI();
+                            UI.initializeUI(); // Refresh UI after import
                         } catch (error) {
                             UI.showMessage(`Error loading file: ${error.message}`, 'error');
                         }
@@ -1052,19 +1064,27 @@
                 });
                 
                 document.getElementById('jsonEditorBtn').addEventListener('click', () => {
-                    UI.toggleJSONEditor();
+                    this.toggleJSONEditor();
                 });
                 
                 document.getElementById('copyBtn').addEventListener('click', () => {
-                    UI.copyToClipboard();
+                    this.copyToClipboard();
+                });
+                
+                document.getElementById('saveJsonBtn').addEventListener('click', () => {
+                    const jsonString = document.getElementById('jsonEditor').value;
+                    if (ConfigManager.updateFromJSON(jsonString)) {
+                        this.showMessage('Configuration updated from JSON', 'success');
+                        this.toggleJSONEditor();
+                    }
                 });
                 
                 document.getElementById('closeJsonBtn').addEventListener('click', () => {
-                    UI.toggleJSONEditor();
+                    this.toggleJSONEditor();
                 });
                 
                 document.getElementById('togglePersonasBtn').addEventListener('click', () => {
-                    UI.toggleAllPersonas();
+                    this.toggleAllPersonas();
                 });
             },
             
