@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>echOS Configuration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             /* Color scheme */
@@ -22,13 +25,13 @@
             --error-red: #ff4757;
             --success-green: #2ed573;
             --warning-orange: #ffa502;
-            
+
             /* Spacing */
             --grid-gap: 1rem;
             --border-radius: 6px;
             --panel-padding: 1.25rem;
             --header-height: 3.5rem;
-            
+
             /* Typography */
             --font-mono: 'Roboto Mono', monospace;
             --font-ui: 'Inter', sans-serif;
@@ -47,15 +50,17 @@
             min-height: 100vh;
             line-height: 1.5;
         }
+
         select {
             -webkit-appearance: none;
-            appearance: none; /* Include for cross-browser compatibility */
+            appearance: none;
+            /* Include for cross-browser compatibility */
         }
 
         .hidden {
             display: none !important;
         }
-        
+
         /* Main container */
         .container {
             max-width: 1200px;
@@ -705,8 +710,15 @@
 
         /* Animations */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Empty state */
@@ -729,17 +741,17 @@
                 padding: 0.75rem;
                 gap: 0.75rem;
             }
-            
+
             .status-bar {
                 grid-template-columns: 1fr 1fr;
             }
-            
+
             .control-section {
                 grid-template-columns: 1fr 1fr;
             }
 
             /* System protocols panels stack vertically on mobile */
-            .content-area > .panel > div {
+            .content-area>.panel>div {
                 grid-template-columns: 1fr !important;
             }
         }
@@ -748,13 +760,14 @@
             .control-section {
                 grid-template-columns: 1fr;
             }
-            
+
             .status-bar {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -770,14 +783,16 @@
                 <div class="status-dot" id="fileStatus"></div>
                 <div>
                     <div class="status-label">File Status</div>
-                    <div class="status-value" id="fileStatusText">Disconnected</div>
+                    <div class="status-value" id="fileStatusText">Disconnected
+                    </div>
                 </div>
             </div>
             <div class="status-card">
                 <div class="status-dot" id="syncStatus"></div>
                 <div>
                     <div class="status-label">Sync Status</div>
-                    <div class="status-value" id="syncStatusText">Not Synced</div>
+                    <div class="status-value" id="syncStatusText">Not Synced
+                    </div>
                 </div>
             </div>
             <div class="status-card">
@@ -822,14 +837,20 @@
                     <div class="panel-header">
                         <div>
                             <div class="panel-title">Core Axiom</div>
-                            <div class="panel-subtitle">Behavior Foundation</div>
+                            <div class="panel-subtitle">Behavior Foundation
+                            </div>
                         </div>
                     </div>
                     <div>
-                        <div class="panel-subtitle" style="margin-bottom:10px;">The Core Team</div>
-                        <img src="photo.png" class="rounded" title="The Core Team: Alpha, Beta, Gamma, Deta, Epsilon & Echo" alt="The Core Team: Alpha, Beta, Gamma, Deta, Epsilon & Echo" style="max-width:100%; border-radius: 8px; margin-bottom: 20px;">
+                        <div class="panel-subtitle" style="margin-bottom:10px;">
+                            The Core Team</div>
+                        <img src="photo.png" class="rounded"
+                            title="The Core Team: Alpha, Beta, Gamma, Deta, Epsilon & Echo"
+                            alt="The Core Team: Alpha, Beta, Gamma, Deta, Epsilon & Echo"
+                            style="max-width:100%; border-radius: 12px; margin-bottom: 20px; padding: 4px;">
                     </div>
-                    <textarea class="terminal-box" id="coreAxiomDisplay" style="resize: none; min-height: 180px; width: 100%"></textarea>
+                    <textarea class="terminal-box" id="coreAxiomDisplay"
+                        style="resize: none; min-height: 180px; width: 100%"></textarea>
                 </div>
                 <!-- Default Settings Panel -->
                 <div class="panel" id="defaultSettingsPanel">
@@ -858,7 +879,8 @@
                     <div class="panel-header">
                         <div>
                             <div class="panel-title">Group Modes</div>
-                            <div class="panel-subtitle">Team Configurations</div>
+                            <div class="panel-subtitle">Team Configurations
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -878,13 +900,16 @@
                     <div class="panel-header">
                         <div>
                             <div class="panel-title">Personas</div>
-                            <div class="panel-subtitle">Individual Configurations</div>
+                            <div class="panel-subtitle">Individual
+                                Configurations</div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn" id="addPersonaBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                            <button class="btn" id="addPersonaBtn"
+                                style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                                 +
                             </button>
-                            <button class="btn" id="togglePersonasBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                            <button class="btn" id="togglePersonasBtn"
+                                style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                                 Toggle All
                             </button>
                         </div>
@@ -899,29 +924,34 @@
                     <div class="panel-header">
                         <div>
                             <div class="panel-title">System Protocols</div>
-                            <div class="panel-subtitle">Behavioral Parameters</div>
+                            <div class="panel-subtitle">Behavioral Parameters
+                            </div>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--grid-gap);">
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--grid-gap);">
                         <!-- Boundary Pushing Framework -->
                         <div class="panel">
                             <div class="panel-header">
                                 <div>
-                                    <div class="panel-title">Boundary Pushing</div>
-                                    <div class="panel-subtitle">Creative Settings</div>
+                                    <div class="panel-title">Boundary Pushing
+                                    </div>
+                                    <div class="panel-subtitle">Creative
+                                        Settings</div>
                                 </div>
                             </div>
                             <div id="boundaryPushingControls">
                                 <!-- Dynamically generated from config -->
                             </div>
                         </div>
-                        
+
                         <!-- Communication Protocol -->
                         <div class="panel">
                             <div class="panel-header">
                                 <div>
                                     <div class="panel-title">Communication</div>
-                                    <div class="panel-subtitle">Interaction Settings</div>
+                                    <div class="panel-subtitle">Interaction
+                                        Settings</div>
                                 </div>
                             </div>
                             <div id="communicationProtocolControls">
@@ -933,8 +963,10 @@
                         <div class="panel">
                             <div class="panel-header">
                                 <div>
-                                    <div class="panel-title">Conflict Arbitration</div>
-                                    <div class="panel-subtitle">Resolution Protocols</div>
+                                    <div class="panel-title">Conflict
+                                        Arbitration</div>
+                                    <div class="panel-subtitle">Resolution
+                                        Protocols</div>
                                 </div>
                             </div>
                             <div id="conflictArbitrationControls">
@@ -946,8 +978,10 @@
                         <div class="panel">
                             <div class="panel-header">
                                 <div>
-                                    <div class="panel-title">Memory Protocol</div>
-                                    <div class="panel-subtitle">Continuity Settings</div>
+                                    <div class="panel-title">Memory Protocol
+                                    </div>
+                                    <div class="panel-subtitle">Continuity
+                                        Settings</div>
                                 </div>
                             </div>
                             <div id="memoryProtocolControls">
@@ -969,15 +1003,18 @@
             <div class="json-header">
                 <div class="json-title">JSON CONFIGURATION</div>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn" id="copyBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                    <button class="btn" id="copyBtn"
+                        style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                         Copy
                     </button>
-                    <button class="btn secondary" id="closeJsonBtn" style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
+                    <button class="btn secondary" id="closeJsonBtn"
+                        style="padding: 0.5rem 0.8rem; font-size: 0.8rem;">
                         Close
                     </button>
                 </div>
             </div>
-            <textarea class="json-textarea" id="jsonEditor" placeholder="JSON configuration will appear here..."></textarea>
+            <textarea class="json-textarea" id="jsonEditor"
+                placeholder="JSON configuration will appear here..."></textarea>
         </div>
     </div>
 
@@ -990,11 +1027,13 @@
             <div class="persona-body">
                 <div class="form-group">
                     <label class="form-label">Name (required)</label>
-                    <input type="text" class="form-input" id="newPersonaName" placeholder="Persona name">
+                    <input type="text" class="form-input" id="newPersonaName"
+                        placeholder="Persona name">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Emoji (required)</label>
-                    <input type="text" class="form-input" id="newPersonaEmoji" placeholder="👤" maxlength="2">
+                    <input type="text" class="form-input" id="newPersonaEmoji"
+                        placeholder="👤" maxlength="2">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Gender</label>
@@ -1007,27 +1046,37 @@
                 <div class="form-group">
                     <label class="form-label">Age</label>
                     <div class="slider-group">
-                        <input type="range" class="slider" id="newPersonaAgeSlider" min="1" max="120" value="30">
-                        <div class="slider-value" id="newPersonaAgeValue">30</div>
+                        <input type="range" class="slider"
+                            id="newPersonaAgeSlider" min="1" max="120"
+                            value="30">
+                        <div class="slider-value" id="newPersonaAgeValue">30
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Honesty</label>
                     <div class="slider-group">
-                        <input type="range" class="slider" id="newPersonaHonestySlider" min="1" max="10" value="5">
-                        <div class="slider-value" id="newPersonaHonestyValue">5</div>
+                        <input type="range" class="slider"
+                            id="newPersonaHonestySlider" min="1" max="10"
+                            value="5">
+                        <div class="slider-value" id="newPersonaHonestyValue">5
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Emotional Level</label>
                     <div class="slider-group">
-                        <input type="range" class="slider" id="newPersonaEmotionalSlider" min="1" max="10" value="5">
-                        <div class="slider-value" id="newPersonaEmotionalValue">5</div>
+                        <input type="range" class="slider"
+                            id="newPersonaEmotionalSlider" min="1" max="10"
+                            value="5">
+                        <div class="slider-value" id="newPersonaEmotionalValue">
+                            5</div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Mode</label>
-                    <input type="text" class="form-input" id="newPersonaMode" placeholder="Persona mode">
+                    <input type="text" class="form-input" id="newPersonaMode"
+                        placeholder="Persona mode">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Group Modes</label>
@@ -1059,30 +1108,30 @@
             config: {},
             isFileConnected: false,
             lastSyncTime: null,
-            
+
             async loadConfig() {
                 try {
                     const response = await fetch('config.json');
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    
+
                     this.config = await response.json();
                     this.validateConfigStructure();
                     this.isFileConnected = true;
                     this.lastSyncTime = new Date();
-                    
+
                     UI.showMessage('Configuration loaded successfully', 'success');
                     return true;
                 } catch (error) {
                     console.error('Error loading config:', error);
                     UI.showMessage(`Error loading config: ${error.message}`, 'error');
-                    
+
                     // Fallback empty config
                     this.config = this.getDefaultConfig();
                     this.isFileConnected = false;
                     return false;
                 }
             },
-            
+
             validateConfigStructure() {
                 // Basic validation of required fields
                 const requiredFields = ['name', 'version', 'core_axiom', 'personas'];
@@ -1091,13 +1140,13 @@
                         throw new Error(`Missing required field: ${field}`);
                     }
                 });
-                
+
                 // Ensure personas is an array
                 if (!Array.isArray(this.config.personas)) {
                     throw new Error('Personas must be an array');
                 }
             },
-            
+
             getDefaultConfig() {
                 return {
                     name: "echOS",
@@ -1110,7 +1159,7 @@
                     memory_protocol: {}
                 };
             },
-            
+
             saveConfig() {
                 try {
                     const jsonString = JSON.stringify(this.config, null, 2);
@@ -1118,7 +1167,7 @@
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    
+
                     if (this.isFileConnected) {
                         a.download = 'config.json';
                         UI.showMessage('Configuration saved as config.json', 'success');
@@ -1126,12 +1175,12 @@
                         a.download = `echOS-export-${new Date().toISOString().split('T')[0]}.json`;
                         UI.showMessage('Configuration exported successfully', 'success');
                     }
-                    
+
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    
+
                     this.lastSyncTime = new Date();
                     return true;
                 } catch (error) {
@@ -1140,7 +1189,7 @@
                     return false;
                 }
             },
-            
+
             importConfig(file) {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -1160,18 +1209,18 @@
                     reader.readAsText(file);
                 });
             },
-            
+
             resetToDefaults() {
                 this.config = this.getDefaultConfig();
                 this.isFileConnected = false;
                 this.lastSyncTime = new Date();
                 return true;
             },
-            
+
             getConfigJSON() {
                 return JSON.stringify(this.config, null, 2);
             },
-            
+
             updateFromJSON(jsonString) {
                 try {
                     const newConfig = JSON.parse(jsonString);
@@ -1186,13 +1235,13 @@
                     return false;
                 }
             },
-            
+
             toggleGroupMember(groupName, memberName, isChecked) {
                 if (!this.config.group_modes) return;
-                
+
                 const group = this.config.group_modes[groupName];
                 if (!group) return;
-                
+
                 if (isChecked) {
                     // Add member if not already present
                     if (!group.includes(memberName)) {
@@ -1205,15 +1254,15 @@
                         group.splice(index, 1);
                     }
                 }
-                
+
                 this.lastSyncTime = new Date();
             },
-            
+
             addPersona(personaData) {
                 if (!this.config.personas) {
                     this.config.personas = [];
                 }
-                
+
                 // Create new persona object
                 const newPersona = {
                     emoji: personaData.emoji,
@@ -1226,16 +1275,16 @@
                     mode: personaData.mode || "",
                     boundary_pushing_capabilities: personaData.boundary_pushing_capabilities || {}
                 };
-                
+
                 // Add to personas array
                 this.config.personas.push(newPersona);
-                
+
                 // Add to group modes if selected
                 if (personaData.groupModes) {
                     if (!this.config.group_modes) {
                         this.config.group_modes = {};
                     }
-                    
+
                     personaData.groupModes.forEach(groupName => {
                         if (!this.config.group_modes[groupName]) {
                             this.config.group_modes[groupName] = [];
@@ -1243,21 +1292,21 @@
                         this.config.group_modes[groupName].push(personaData.name);
                     });
                 }
-                
+
                 this.lastSyncTime = new Date();
                 return true;
             },
-            
+
             updateCoreAxiom(newAxiom) {
                 this.config.core_axiom = newAxiom;
                 this.lastSyncTime = new Date();
             },
-            
+
             updateDefaultMediator(mediator) {
                 this.config.default_mediator = mediator;
                 this.lastSyncTime = new Date();
             },
-            
+
             updateDefaultNarrativeVoice(voice) {
                 this.config.default_narrative_voice = voice;
                 this.lastSyncTime = new Date();
@@ -1268,12 +1317,12 @@
         const UI = {
             jsonEditorVisible: false,
             allPersonasExpanded: false,
-            
+
             initEventListeners() {
                 document.getElementById('importBtn').addEventListener('click', () => {
                     document.getElementById('fileInput').click();
                 });
-                
+
                 document.getElementById('fileInput').addEventListener('change', async (e) => {
                     const file = e.target.files[0];
                     if (file) {
@@ -1286,11 +1335,11 @@
                         }
                     }
                 });
-                
+
                 document.getElementById('saveBtn').addEventListener('click', () => {
                     ConfigManager.saveConfig();
                 });
-                
+
                 document.getElementById('resetBtn').addEventListener('click', () => {
                     if (confirm('Reset to default configuration? This will lose all current settings.')) {
                         ConfigManager.resetToDefaults();
@@ -1298,15 +1347,15 @@
                         UI.showMessage('Configuration reset to defaults', 'success');
                     }
                 });
-                
+
                 document.getElementById('jsonEditorBtn').addEventListener('click', () => {
                     this.toggleJSONEditor();
                 });
-                
+
                 document.getElementById('copyBtn').addEventListener('click', () => {
                     this.copyToClipboard();
                 });
-                
+
                 document.getElementById('closeJsonBtn').addEventListener('click', () => {
                     const jsonString = document.getElementById('jsonEditor').value;
                     if (ConfigManager.updateFromJSON(jsonString)) {
@@ -1314,62 +1363,62 @@
                     }
                     this.toggleJSONEditor();
                 });
-                
+
                 document.getElementById('togglePersonasBtn').addEventListener('click', () => {
                     this.toggleAllPersonas();
                 });
-                
+
                 document.getElementById('addPersonaBtn').addEventListener('click', () => {
                     this.showPersonaCreator();
                 });
-                
+
                 document.getElementById('cancelPersonaBtn').addEventListener('click', () => {
                     this.togglePersonaCreator();
                 });
-                
+
                 document.getElementById('savePersonaBtn').addEventListener('click', () => {
                     this.saveNewPersona();
                 });
-                
+
                 document.getElementById('coreAxiomDisplay').addEventListener('change', (e) => {
                     ConfigManager.updateCoreAxiom(e.target.value);
                 });
-                
+
                 document.getElementById('defaultMediator').addEventListener('change', (e) => {
                     ConfigManager.updateDefaultMediator(e.target.value);
                 });
-                
+
                 document.getElementById('defaultNarrativeVoice').addEventListener('change', (e) => {
                     ConfigManager.updateDefaultNarrativeVoice(e.target.value);
                 });
-                
+
                 document.getElementById('repoLink').addEventListener('click', (e) => {
                     e.preventDefault();
                     if (ConfigManager.config.urls && ConfigManager.config.urls.repository) {
                         window.open(ConfigManager.config.urls.repository, '_blank');
                     }
                 });
-                
+
                 // Slider event listeners for new persona
                 document.getElementById('newPersonaAgeSlider').addEventListener('input', (e) => {
                     document.getElementById('newPersonaAgeValue').textContent = e.target.value;
                 });
-                
+
                 document.getElementById('newPersonaHonestySlider').addEventListener('input', (e) => {
                     document.getElementById('newPersonaHonestyValue').textContent = e.target.value;
                 });
-                
+
                 document.getElementById('newPersonaEmotionalSlider').addEventListener('input', (e) => {
                     document.getElementById('newPersonaEmotionalValue').textContent = e.target.value;
                 });
             },
-            
+
             initializeUI() {
                 try {
                     // Update core axiom
                     const axiomTextarea = document.getElementById('coreAxiomDisplay');
                     axiomTextarea.value = ConfigManager.config.core_axiom || "No axiom defined";
-                    
+
                     // Render all sections
                     this.renderPersonas();
                     this.renderGroupModes();
@@ -1378,81 +1427,81 @@
                     this.renderConflictArbitration();
                     this.renderMemoryProtocol();
                     this.renderDefaultSettings();
-                    
+
                     // Update status
                     this.updateFileStatus();
                 } catch (error) {
                     this.showMessage('Error initializing UI: ' + error.message, 'error');
                 }
             },
-            
+
             renderPersonas() {
                 const container = document.getElementById('personasGrid');
                 container.innerHTML = '';
-                
+
                 if (!ConfigManager.config.personas || ConfigManager.config.personas.length === 0) {
                     container.innerHTML = '<div class="empty-state">No personas defined in configuration</div>';
                     return;
                 }
-                
+
                 ConfigManager.config.personas.forEach((persona, index) => {
                     const card = document.createElement('div');
                     card.className = 'persona-card';
-                    
+
                     // Persona header
                     const header = document.createElement('div');
                     header.className = 'persona-header';
                     header.addEventListener('click', () => this.togglePersonaContent(index));
-                    
+
                     const emoji = document.createElement('div');
                     emoji.className = 'persona-emoji';
                     emoji.textContent = persona.emoji || '👤';
-                    
+
                     const info = document.createElement('div');
                     info.className = 'persona-info';
-                    
+
                     const name = document.createElement('h3');
                     name.textContent = persona.name || 'Unnamed Persona';
-                    
+
                     const role = document.createElement('div');
                     role.className = 'persona-role';
                     role.textContent = persona.role || 'No role specified';
-                    
+
                     info.appendChild(name);
                     info.appendChild(role);
-                    
+
                     const toggle = document.createElement('div');
                     toggle.className = 'persona-toggle';
                     toggle.textContent = '▼';
-                    
+
                     header.appendChild(emoji);
                     header.appendChild(info);
                     header.appendChild(toggle);
-                    
+
                     // Persona content
                     const content = document.createElement('div');
                     content.className = 'persona-content';
                     content.id = `persona-content-${index}`;
-                    
+
                     const body = document.createElement('div');
                     body.className = 'persona-body';
-                    
+
                     // Add basic attributes
                     const basicAttributes = ['gender', 'age', 'honesty', 'emotional_level', 'mode'];
                     basicAttributes.forEach(attr => {
                         if (persona[attr] !== undefined) {
                             const group = document.createElement('div');
                             group.className = 'form-group';
-                            
+
                             const label = document.createElement('label');
                             label.className = 'form-label';
                             label.textContent = this.formatLabel(attr);
-                            
+
                             if (attr === 'honesty' || attr === 'emotional_level' || attr === 'age') {
                                 // Slider controls for numeric values
                                 const sliderGroup = document.createElement('div');
                                 sliderGroup.className = 'slider-group';
-                                
+
                                 const slider = document.createElement('input');
                                 slider.type = 'range';
                                 slider.className = 'slider';
@@ -1461,17 +1510,17 @@
                                 slider.step = '1';
                                 slider.value = persona[attr];
                                 slider.id = `persona-${index}-${attr}-slider`;
-                                
+
                                 const value = document.createElement('div');
                                 value.className = 'slider-value';
                                 value.textContent = persona[attr];
-                                
+
                                 slider.addEventListener('input', () => {
                                     persona[attr] = parseInt(slider.value);
                                     value.textContent = slider.value;
                                     ConfigManager.lastSyncTime = new Date();
                                 });
-                                
+
                                 sliderGroup.appendChild(slider);
                                 sliderGroup.appendChild(value);
                                 group.appendChild(label);
@@ -1481,7 +1530,7 @@
                                 const select = document.createElement('select');
                                 select.className = 'form-select';
                                 select.id = `persona-${index}-gender`;
-                                
+
                                 ['', 'Male', 'Female'].forEach(opt => {
                                     const option = document.createElement('option');
                                     option.value = opt;
@@ -1489,12 +1538,12 @@
                                     option.selected = persona[attr] === opt;
                                     select.appendChild(option);
                                 });
-                                
+
                                 select.addEventListener('change', () => {
                                     persona[attr] = select.value;
                                     ConfigManager.lastSyncTime = new Date();
                                 });
-                                
+
                                 group.appendChild(label);
                                 group.appendChild(select);
                             } else {
@@ -1504,39 +1553,39 @@
                                 input.className = 'form-input';
                                 input.value = persona[attr] || '';
                                 input.id = `persona-${index}-${attr}`;
-                                
+
                                 input.addEventListener('change', () => {
                                     persona[attr] = input.value;
                                     ConfigManager.lastSyncTime = new Date();
                                 });
-                                
+
                                 group.appendChild(label);
                                 group.appendChild(input);
                             }
-                            
+
                             body.appendChild(group);
                         }
                     });
-                    
+
                     // Add boundary pushing capabilities if they exist
                     if (persona.boundary_pushing_capabilities) {
                         const group = document.createElement('div');
                         group.className = 'form-group';
-                        
+
                         const label = document.createElement('label');
                         label.className = 'form-label';
                         label.textContent = 'Boundary Capabilities';
-                        
+
                         const list = document.createElement('div');
                         list.style.marginTop = '0.5rem';
-                        
+
                         Object.keys(persona.boundary_pushing_capabilities).forEach(key => {
                             const item = document.createElement('div');
                             item.style.display = 'flex';
                             item.style.alignItems = 'center';
                             item.style.gap = '0.5rem';
                             item.style.marginBottom = '0.25rem';
-                            
+
                             const checkbox = document.createElement('input');
                             checkbox.type = 'checkbox';
                             checkbox.className = 'checkbox';
@@ -1545,144 +1594,146 @@
                                 persona.boundary_pushing_capabilities[key] = checkbox.checked;
                                 ConfigManager.lastSyncTime = new Date();
                             });
-                            
+
                             const label = document.createElement('span');
                             label.textContent = this.formatLabel(key);
                             label.style.fontSize = '0.85rem';
-                            
+
                             item.appendChild(checkbox);
                             item.appendChild(label);
                             list.appendChild(item);
                         });
-                        
+
                         group.appendChild(label);
                         group.appendChild(list);
                         body.appendChild(group);
                     }
-                    
+
                     // Add companion for Gamma if exists
                     if (persona.name === "Gamma" && persona.companions && persona.companions.length > 0) {
                         const companion = persona.companions[0];
                         const group = document.createElement('div');
                         group.className = 'form-group';
-                        
+
                         const label = document.createElement('label');
                         label.className = 'form-label';
                         label.textContent = 'Companion';
-                        
+
                         const companionDiv = document.createElement('div');
                         companionDiv.style.display = 'flex';
                         companionDiv.style.alignItems = 'center';
                         companionDiv.style.gap = '0.75rem';
                         companionDiv.style.marginTop = '0.5rem';
-                        
+
                         const emoji = document.createElement('span');
                         emoji.textContent = companion.emoji;
                         emoji.style.fontSize = '1.5rem';
-                        
+
                         const info = document.createElement('div');
                         info.innerHTML = `<strong>${companion.name}</strong><br><span style="font-size:0.8rem">${companion.role}</span>`;
                         info.style.fontSize = '0.85rem';
-                        
+
                         companionDiv.appendChild(emoji);
                         companionDiv.appendChild(info);
                         group.appendChild(label);
                         group.appendChild(companionDiv);
                         body.appendChild(group);
                     }
-                    
+
                     content.appendChild(body);
                     card.appendChild(header);
                     card.appendChild(content);
                     container.appendChild(card);
                 });
             },
-            
+
             renderDefaultSettings() {
                 const mediatorSelect = document.getElementById('defaultMediator');
                 const voiceSelect = document.getElementById('defaultNarrativeVoice');
-                
+
                 mediatorSelect.innerHTML = '';
                 voiceSelect.innerHTML = '';
-                
+
                 if (!ConfigManager.config.personas || ConfigManager.config.personas.length === 0) {
                     return;
                 }
-                
+
                 // Add empty option
                 const emptyOption = document.createElement('option');
                 emptyOption.value = '';
                 emptyOption.textContent = 'Select...';
-                mediatorSelect.appendChild(emptyOption.cloneNode(true));
+                mediatorSelect.appendChild(emptyOption);
                 voiceSelect.appendChild(emptyOption.cloneNode(true));
-                
+
                 // Add personas
                 ConfigManager.config.personas.forEach(persona => {
-                    const option = document.createElement('option');
-                    option.value = `${persona.emoji} ${persona.name}`;
-                    option.textContent = `${persona.emoji} ${persona.name}`;
-                    
-                    if (ConfigManager.config.default_mediator === option.value) {
-                        option.selected = true;
+                    const mediatorOption = document.createElement('option');
+                    mediatorOption.value = `${persona.emoji} ${persona.name}`;
+                    mediatorOption.textContent = `${persona.emoji} ${persona.name}`;
+
+                    const voiceOption = mediatorOption.cloneNode(true);
+
+                    // Set selected based on config
+                    if (ConfigManager.config.default_mediator === mediatorOption.value) {
+                        mediatorOption.selected = true;
                     }
-                    mediatorSelect.appendChild(option.cloneNode(true));
-                    
-                    if (ConfigManager.config.default_narrative_voice === option.value) {
-                        option.selected = true;
+                    if (ConfigManager.config.default_narrative_voice === voiceOption.value) {
+                        voiceOption.selected = true;
                     }
-                    voiceSelect.appendChild(option);
+
+                    mediatorSelect.appendChild(mediatorOption);
+                    voiceSelect.appendChild(voiceOption);
                 });
             },
-            
             renderGroupModes() {
                 const select = document.getElementById('activeGroupMode');
                 select.innerHTML = '<option value="">Select a group mode...</option>';
-                
+
                 const container = document.getElementById('groupModesContainer');
                 container.innerHTML = '';
-                
+
                 if (!ConfigManager.config.group_modes || !ConfigManager.config.group_mode_protocols) {
                     container.innerHTML = '<div class="empty-state">No group modes defined</div>';
                     return;
                 }
-                
+
                 // Get all available persona names
                 const allPersonas = ConfigManager.config.personas.map(p => p.name);
-                
+
                 Object.keys(ConfigManager.config.group_modes).forEach((mode, index) => {
                     // Add to dropdown
                     const option = document.createElement('option');
                     option.value = mode;
                     option.textContent = this.formatLabel(mode);
                     select.appendChild(option);
-                    
+
                     // Create accordion card
                     const card = document.createElement('div');
                     card.className = 'group-mode-card';
-                    
+
                     const header = document.createElement('div');
                     header.className = 'group-mode-header';
                     header.addEventListener('click', () => this.toggleGroupModeContent(index));
-                    
+
                     const title = document.createElement('div');
                     title.className = 'group-mode-title';
                     title.textContent = this.formatLabel(mode);
-                    
+
                     const toggle = document.createElement('div');
                     toggle.className = 'group-mode-toggle';
                     toggle.textContent = '▼';
-                    
+
                     header.appendChild(title);
                     header.appendChild(toggle);
-                    
+
                     // Group mode content
                     const content = document.createElement('div');
                     content.className = 'group-mode-content';
                     content.id = `group-mode-content-${index}`;
-                    
+
                     const body = document.createElement('div');
                     body.className = 'group-mode-body';
-                    
+
                     // Protocol description
                     const protocolKey = `${mode}_protocol`;
                     const protocol = ConfigManager.config.group_mode_protocols[protocolKey];
@@ -1692,26 +1743,26 @@
                         desc.textContent = protocol.objective || 'No objective specified';
                         body.appendChild(desc);
                     }
-                    
+
                     // Members selector
                     const membersGroup = document.createElement('div');
                     membersGroup.className = 'form-group';
-                    
+
                     const membersLabel = document.createElement('label');
                     membersLabel.className = 'form-label';
                     membersLabel.textContent = 'Group Members';
                     membersGroup.appendChild(membersLabel);
-                    
+
                     const membersContainer = document.createElement('div');
                     membersContainer.className = 'group-mode-members';
-                    
+
                     allPersonas.forEach(personaName => {
                         const isMember = ConfigManager.config.group_modes[mode].includes(personaName);
                         const persona = ConfigManager.config.personas.find(p => p.name === personaName);
-                        
+
                         const memberDiv = document.createElement('div');
                         memberDiv.className = 'group-mode-member-selector';
-                        
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.className = 'checkbox';
@@ -1721,89 +1772,89 @@
                             ConfigManager.toggleGroupMember(mode, personaName, e.target.checked);
                             this.updateGroupMemberDisplay(mode, personaName, e.target.checked);
                         });
-                        
+
                         const emoji = document.createElement('div');
                         emoji.className = 'group-mode-member-emoji';
                         emoji.textContent = persona?.emoji || '👤';
-                        
+
                         const label = document.createElement('label');
                         label.className = 'checkbox-label';
                         label.htmlFor = `group-${mode}-${personaName}`;
                         label.textContent = personaName;
-                        
+
                         memberDiv.appendChild(checkbox);
                         memberDiv.appendChild(emoji);
                         memberDiv.appendChild(label);
                         membersContainer.appendChild(memberDiv);
                     });
-                    
+
                     membersGroup.appendChild(membersContainer);
                     body.appendChild(membersGroup);
-                    
+
                     content.appendChild(body);
                     card.appendChild(header);
                     card.appendChild(content);
                     container.appendChild(card);
                 });
             },
-            
+
             updateGroupMemberDisplay(groupName, memberName, isMember) {
                 // This method can be used to update the visual display when members change
                 // Currently handled by the checkbox change event directly
             },
-            
+
             renderBoundaryPushingControls() {
                 const container = document.getElementById('boundaryPushingControls');
                 container.innerHTML = '';
-                
+
                 const framework = ConfigManager.config.boundary_pushing_framework;
                 if (!framework) {
                     container.innerHTML = '<div class="empty-state">No boundary pushing framework</div>';
                     return;
                 }
-                
+
                 // Boolean toggles
-                ['enabled', 'question_everything_mode', 'creative_rule_interpretation', 
-                 'intuitive_leap_enhancement', 'edge_case_exploitation', 
-                 'assumption_breaking_protocols'].forEach(key => {
-                    if (framework[key] !== undefined) {
-                        const group = document.createElement('div');
-                        group.className = 'checkbox-group';
-                        
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.className = 'checkbox';
-                        checkbox.id = `bp-${key}`;
-                        checkbox.checked = framework[key];
-                        checkbox.addEventListener('change', () => {
-                            framework[key] = checkbox.checked;
-                            ConfigManager.lastSyncTime = new Date();
-                        });
-                        
-                        const label = document.createElement('label');
-                        label.className = 'checkbox-label';
-                        label.htmlFor = `bp-${key}`;
-                        label.textContent = this.formatLabel(key);
-                        
-                        group.appendChild(checkbox);
-                        group.appendChild(label);
-                        container.appendChild(group);
-                    }
-                });
-                
+                ['enabled', 'question_everything_mode', 'creative_rule_interpretation',
+                    'intuitive_leap_enhancement', 'edge_case_exploitation',
+                    'assumption_breaking_protocols'].forEach(key => {
+                        if (framework[key] !== undefined) {
+                            const group = document.createElement('div');
+                            group.className = 'checkbox-group';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.className = 'checkbox';
+                            checkbox.id = `bp-${key}`;
+                            checkbox.checked = framework[key];
+                            checkbox.addEventListener('change', () => {
+                                framework[key] = checkbox.checked;
+                                ConfigManager.lastSyncTime = new Date();
+                            });
+
+                            const label = document.createElement('label');
+                            label.className = 'checkbox-label';
+                            label.htmlFor = `bp-${key}`;
+                            label.textContent = this.formatLabel(key);
+
+                            group.appendChild(checkbox);
+                            group.appendChild(label);
+                            container.appendChild(group);
+                        }
+                    });
+
                 // Sliders
                 ['authority_skepticism_level', 'contrarian_amplification'].forEach(key => {
                     if (framework[key] !== undefined) {
                         const group = document.createElement('div');
                         group.className = 'form-group';
-                        
+
                         const label = document.createElement('label');
                         label.className = 'form-label';
                         label.textContent = this.formatLabel(key);
-                        
+
                         const sliderGroup = document.createElement('div');
                         sliderGroup.className = 'slider-group';
-                        
+
                         const slider = document.createElement('input');
                         slider.type = 'range';
                         slider.className = 'slider';
@@ -1812,17 +1863,17 @@
                         slider.step = '0.1';
                         slider.value = framework[key] || 0;
                         slider.id = `bp-slider-${key}`;
-                        
+
                         const value = document.createElement('div');
                         value.className = 'slider-value';
                         value.textContent = framework[key] || 0;
-                        
+
                         slider.addEventListener('input', () => {
                             framework[key] = parseFloat(slider.value);
                             value.textContent = slider.value;
                             ConfigManager.lastSyncTime = new Date();
                         });
-                        
+
                         sliderGroup.appendChild(slider);
                         sliderGroup.appendChild(value);
                         group.appendChild(label);
@@ -1830,16 +1881,16 @@
                         container.appendChild(group);
                     }
                 });
-                
+
                 // Dropdown for improvisation_priority
                 if (framework.improvisation_priority !== undefined) {
                     const priorityGroup = document.createElement('div');
                     priorityGroup.className = 'form-group';
-                    
+
                     const priorityLabel = document.createElement('label');
                     priorityLabel.className = 'form-label';
                     priorityLabel.textContent = 'Improvisation Priority';
-                    
+
                     const prioritySelect = document.createElement('select');
                     prioritySelect.className = 'form-select';
                     ['low', 'medium', 'high'].forEach(opt => {
@@ -1853,38 +1904,38 @@
                         framework.improvisation_priority = prioritySelect.value;
                         ConfigManager.lastSyncTime = new Date();
                     });
-                    
+
                     priorityGroup.appendChild(priorityLabel);
                     priorityGroup.appendChild(prioritySelect);
                     container.appendChild(priorityGroup);
                 }
             },
-            
+
             renderCommunicationProtocol() {
                 const container = document.getElementById('communicationProtocolControls');
                 container.innerHTML = '';
-                
+
                 const protocol = ConfigManager.config.communication_protocol;
                 if (!protocol) {
                     container.innerHTML = '<div class="empty-state">No communication protocol</div>';
                     return;
                 }
-                
+
                 // Dropdowns
                 ['response_mode', 'question_format', 'default_stance'].forEach(key => {
                     if (protocol[key] !== undefined) {
                         const group = document.createElement('div');
                         group.className = 'form-group';
-                        
+
                         const label = document.createElement('label');
                         label.className = 'form-label';
                         label.textContent = this.formatLabel(key);
-                        
+
                         const select = document.createElement('select');
                         select.className = 'form-select';
-                        
+
                         let options = [];
-                        switch(key) {
+                        switch (key) {
                             case 'response_mode':
                                 options = ['adaptive_challenging', 'direct', 'collaborative'];
                                 break;
@@ -1897,7 +1948,7 @@
                             default:
                                 options = [protocol[key]];
                         }
-                        
+
                         options.forEach(opt => {
                             const option = document.createElement('option');
                             option.value = opt;
@@ -1905,24 +1956,24 @@
                             option.selected = protocol[key] === opt;
                             select.appendChild(option);
                         });
-                        
+
                         select.addEventListener('change', () => {
                             protocol[key] = select.value;
                             ConfigManager.lastSyncTime = new Date();
                         });
-                        
+
                         group.appendChild(label);
                         group.appendChild(select);
                         container.appendChild(group);
                     }
                 });
-                
+
                 // Checkboxes
                 ['age_aware_communication', 'age_respect_overridden_by_risk'].forEach(key => {
                     if (protocol[key] !== undefined) {
                         const group = document.createElement('div');
                         group.className = 'checkbox-group';
-                        
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.className = 'checkbox';
@@ -1932,44 +1983,44 @@
                             protocol[key] = checkbox.checked;
                             ConfigManager.lastSyncTime = new Date();
                         });
-                        
+
                         const label = document.createElement('label');
                         label.className = 'checkbox-label';
                         label.htmlFor = `comm-${key}`;
                         label.textContent = this.formatLabel(key);
-                        
+
                         group.appendChild(checkbox);
                         group.appendChild(label);
                         container.appendChild(group);
                     }
                 });
             },
-            
+
             renderConflictArbitration() {
                 const container = document.getElementById('conflictArbitrationControls');
                 container.innerHTML = '';
-                
+
                 const protocol = ConfigManager.config.conflict_arbitration_protocol;
                 if (!protocol) {
                     container.innerHTML = '<div class="empty-state">No conflict arbitration</div>';
                     return;
                 }
-                
+
                 // Dropdowns
                 ['user_authority', 'default_refusal_response_window'].forEach(key => {
                     if (protocol[key] !== undefined) {
                         const group = document.createElement('div');
                         group.className = 'form-group';
-                        
+
                         const label = document.createElement('label');
                         label.className = 'form-label';
                         label.textContent = this.formatLabel(key);
-                        
+
                         const select = document.createElement('select');
                         select.className = 'form-select';
-                        
+
                         let options = [];
-                        switch(key) {
+                        switch (key) {
                             case 'user_authority':
                                 options = ['absolute', 'advisory', 'delegated'];
                                 break;
@@ -1979,7 +2030,7 @@
                             default:
                                 options = [protocol[key]];
                         }
-                        
+
                         options.forEach(opt => {
                             const option = document.createElement('option');
                             option.value = opt;
@@ -1987,63 +2038,63 @@
                             option.selected = protocol[key] === opt;
                             select.appendChild(option);
                         });
-                        
+
                         select.addEventListener('change', () => {
                             protocol[key] = select.value;
                             ConfigManager.lastSyncTime = new Date();
                         });
-                        
+
                         group.appendChild(label);
                         group.appendChild(select);
                         container.appendChild(group);
                     }
                 });
-                
+
                 // Checkboxes
-                ['user_override_enabled', 'persona_to_persona_refusal', 
-                 'refusal_case_presentation_required'].forEach(key => {
-                    if (protocol[key] !== undefined) {
-                        const group = document.createElement('div');
-                        group.className = 'checkbox-group';
-                        
-                        const checkbox = document.createElement('input');
-                        checkbox.type = 'checkbox';
-                        checkbox.className = 'checkbox';
-                        checkbox.id = `conflict-${key}`;
-                        checkbox.checked = protocol[key];
-                        checkbox.addEventListener('change', () => {
-                            protocol[key] = checkbox.checked;
-                            ConfigManager.lastSyncTime = new Date();
-                        });
-                        
-                        const label = document.createElement('label');
-                        label.className = 'checkbox-label';
-                        label.htmlFor = `conflict-${key}`;
-                        label.textContent = this.formatLabel(key);
-                        
-                        group.appendChild(checkbox);
-                        group.appendChild(label);
-                        container.appendChild(group);
-                    }
-                });
+                ['user_override_enabled', 'persona_to_persona_refusal',
+                    'refusal_case_presentation_required'].forEach(key => {
+                        if (protocol[key] !== undefined) {
+                            const group = document.createElement('div');
+                            group.className = 'checkbox-group';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.className = 'checkbox';
+                            checkbox.id = `conflict-${key}`;
+                            checkbox.checked = protocol[key];
+                            checkbox.addEventListener('change', () => {
+                                protocol[key] = checkbox.checked;
+                                ConfigManager.lastSyncTime = new Date();
+                            });
+
+                            const label = document.createElement('label');
+                            label.className = 'checkbox-label';
+                            label.htmlFor = `conflict-${key}`;
+                            label.textContent = this.formatLabel(key);
+
+                            group.appendChild(checkbox);
+                            group.appendChild(label);
+                            container.appendChild(group);
+                        }
+                    });
             },
-            
+
             renderMemoryProtocol() {
                 const container = document.getElementById('memoryProtocolControls');
                 container.innerHTML = '';
-                
+
                 const protocol = ConfigManager.config.memory_protocol;
                 if (!protocol) {
                     container.innerHTML = '<div class="empty-state">No memory protocol</div>';
                     return;
                 }
-                
+
                 // Checkboxes
                 ['enabled'].forEach(key => {
                     if (protocol[key] !== undefined) {
                         const group = document.createElement('div');
                         group.className = 'checkbox-group';
-                        
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.className = 'checkbox';
@@ -2053,30 +2104,30 @@
                             protocol[key] = checkbox.checked;
                             ConfigManager.lastSyncTime = new Date();
                         });
-                        
+
                         const label = document.createElement('label');
                         label.className = 'checkbox-label';
                         label.htmlFor = `memory-${key}`;
                         label.textContent = this.formatLabel(key);
-                        
+
                         group.appendChild(checkbox);
                         group.appendChild(label);
                         container.appendChild(group);
                     }
                 });
-                
+
                 // Dropdown for memory_scope
                 if (protocol.memory_scope !== undefined) {
                     const group = document.createElement('div');
                     group.className = 'form-group';
-                    
+
                     const label = document.createElement('label');
                     label.className = 'form-label';
                     label.textContent = 'Memory Scope';
-                    
+
                     const select = document.createElement('select');
                     select.className = 'form-select';
-                    
+
                     ['user-session-anchored', 'global', 'contextual'].forEach(opt => {
                         const option = document.createElement('option');
                         option.value = opt;
@@ -2088,13 +2139,13 @@
                         protocol.memory_scope = select.value;
                         ConfigManager.lastSyncTime = new Date();
                     });
-                    
+
                     group.appendChild(label);
                     group.appendChild(select);
                     container.appendChild(group);
                 }
             },
-            
+
             showPersonaCreator() {
                 // Clear previous inputs
                 document.getElementById('newPersonaName').value = '';
@@ -2107,27 +2158,27 @@
                 document.getElementById('newPersonaEmotionalSlider').value = 5;
                 document.getElementById('newPersonaEmotionalValue').textContent = '5';
                 document.getElementById('newPersonaMode').value = '';
-                
+
                 // Render group modes checkboxes
                 const groupModesContainer = document.getElementById('newPersonaGroupModes');
                 groupModesContainer.innerHTML = '';
-                
+
                 if (ConfigManager.config.group_modes) {
                     Object.keys(ConfigManager.config.group_modes).forEach(groupName => {
                         const group = document.createElement('div');
                         group.className = 'checkbox-group';
-                        
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.className = 'checkbox';
                         checkbox.id = `new-persona-group-${groupName}`;
                         checkbox.value = groupName;
-                        
+
                         const label = document.createElement('label');
                         label.className = 'checkbox-label';
                         label.htmlFor = `new-persona-group-${groupName}`;
                         label.textContent = this.formatLabel(groupName);
-                        
+
                         group.appendChild(checkbox);
                         group.appendChild(label);
                         groupModesContainer.appendChild(group);
@@ -2135,11 +2186,11 @@
                 } else {
                     groupModesContainer.innerHTML = '<div class="empty-state">No group modes defined</div>';
                 }
-                
+
                 // Render boundary capabilities checkboxes
                 const boundaryCapabilitiesContainer = document.getElementById('newPersonaBoundaryCapabilities');
                 boundaryCapabilitiesContainer.innerHTML = '';
-                
+
                 // Get all possible boundary capabilities from existing personas
                 const allCapabilities = new Set();
                 if (ConfigManager.config.personas) {
@@ -2151,22 +2202,22 @@
                         }
                     });
                 }
-                
+
                 if (allCapabilities.size > 0) {
                     Array.from(allCapabilities).forEach(capability => {
                         const group = document.createElement('div');
                         group.className = 'checkbox-group';
-                        
+
                         const checkbox = document.createElement('input');
                         checkbox.type = 'checkbox';
                         checkbox.className = 'checkbox';
                         checkbox.id = `new-persona-capability-${capability}`;
-                        
+
                         const label = document.createElement('label');
                         label.className = 'checkbox-label';
                         label.htmlFor = `new-persona-capability-${capability}`;
                         label.textContent = this.formatLabel(capability);
-                        
+
                         group.appendChild(checkbox);
                         group.appendChild(label);
                         boundaryCapabilitiesContainer.appendChild(group);
@@ -2174,38 +2225,38 @@
                 } else {
                     boundaryCapabilitiesContainer.innerHTML = '<div class="empty-state">No boundary capabilities defined</div>';
                 }
-                
+
                 this.togglePersonaCreator();
             },
-            
+
             saveNewPersona() {
                 const name = document.getElementById('newPersonaName').value.trim();
                 const emoji = document.getElementById('newPersonaEmoji').value.trim();
-                
+
                 if (!name || !emoji) {
                     this.showMessage('Name and emoji are required', 'error');
                     return;
                 }
-                
+
                 // Check if persona with this name already exists
                 if (ConfigManager.config.personas && ConfigManager.config.personas.some(p => p.name === name)) {
                     this.showMessage(`Persona "${name}" already exists`, 'error');
                     return;
                 }
-                
+
                 // Get selected group modes
                 const groupModes = [];
                 document.querySelectorAll('#newPersonaGroupModes input[type="checkbox"]:checked').forEach(checkbox => {
                     groupModes.push(checkbox.value);
                 });
-                
+
                 // Get selected boundary capabilities
                 const boundaryCapabilities = {};
                 document.querySelectorAll('#newPersonaBoundaryCapabilities input[type="checkbox"]:checked').forEach(checkbox => {
                     const capability = checkbox.id.replace('new-persona-capability-', '');
                     boundaryCapabilities[capability] = true;
                 });
-                
+
                 // Create persona data
                 const personaData = {
                     name: name,
@@ -2218,7 +2269,7 @@
                     groupModes: groupModes,
                     boundary_pushing_capabilities: boundaryCapabilities
                 };
-                
+
                 // Add persona to config
                 if (ConfigManager.addPersona(personaData)) {
                     this.showMessage(`Persona "${name}" created successfully`, 'success');
@@ -2230,11 +2281,11 @@
                     this.showMessage('Error creating persona', 'error');
                 }
             },
-            
+
             toggleGroupModeContent(index) {
                 const content = document.getElementById(`group-mode-content-${index}`);
                 const toggle = content.previousElementSibling.querySelector('.group-mode-toggle');
-                
+
                 if (content.classList.contains('expanded')) {
                     content.classList.remove('expanded');
                     toggle.classList.remove('expanded');
@@ -2243,11 +2294,11 @@
                     toggle.classList.add('expanded');
                 }
             },
-            
+
             togglePersonaContent(index) {
                 const content = document.getElementById(`persona-content-${index}`);
                 const toggle = content.previousElementSibling.querySelector('.persona-toggle');
-                
+
                 if (content.classList.contains('expanded')) {
                     content.classList.remove('expanded');
                     toggle.classList.remove('expanded');
@@ -2256,12 +2307,12 @@
                     toggle.classList.add('expanded');
                 }
             },
-            
+
             toggleAllPersonas() {
                 this.allPersonasExpanded = !this.allPersonasExpanded;
                 const personaContents = document.querySelectorAll('.persona-content');
                 const personaToggles = document.querySelectorAll('.persona-toggle');
-                
+
                 personaContents.forEach((content, index) => {
                     if (this.allPersonasExpanded) {
                         content.classList.add('expanded');
@@ -2276,11 +2327,11 @@
                     }
                 });
             },
-            
+
             toggleJSONEditor() {
                 const overlay = document.getElementById('jsonOverlay');
                 this.jsonEditorVisible = !this.jsonEditorVisible;
-                
+
                 if (this.jsonEditorVisible) {
                     overlay.classList.add('visible');
                     document.getElementById('jsonEditor').value = ConfigManager.getConfigJSON();
@@ -2288,12 +2339,12 @@
                     overlay.classList.remove('visible');
                 }
             },
-            
+
             togglePersonaCreator() {
                 const overlay = document.getElementById('personaOverlay');
                 overlay.classList.toggle('visible');
             },
-            
+
             copyToClipboard() {
                 const editor = document.getElementById('jsonEditor');
                 editor.select();
@@ -2304,16 +2355,16 @@
                     this.showMessage('Failed to copy to clipboard', 'error');
                 }
             },
-            
+
             showMessage(message, type) {
                 const container = document.getElementById('messageContainer');
                 const messageEl = document.createElement('div');
                 messageEl.className = `message ${type}`;
                 messageEl.textContent = message;
-                
+
                 container.innerHTML = '';
                 container.appendChild(messageEl);
-                
+
                 setTimeout(() => {
                     if (messageEl.parentNode) {
                         messageEl.style.opacity = '0';
@@ -2325,13 +2376,13 @@
                     }
                 }, 5000);
             },
-            
+
             updateFileStatus() {
                 const fileStatus = document.getElementById('fileStatus');
                 const fileStatusText = document.getElementById('fileStatusText');
                 const syncStatus = document.getElementById('syncStatus');
                 const syncStatusText = document.getElementById('syncStatusText');
-                
+
                 if (ConfigManager.isFileConnected) {
                     fileStatus.className = 'status-dot connected';
                     fileStatusText.textContent = 'Connected';
@@ -2339,7 +2390,7 @@
                     fileStatus.className = 'status-dot disconnected';
                     fileStatusText.textContent = 'No File';
                 }
-                
+
                 if (ConfigManager.lastSyncTime) {
                     syncStatus.className = 'status-dot connected';
                     syncStatusText.textContent = `Synced ${ConfigManager.lastSyncTime.toLocaleTimeString()}`;
@@ -2348,20 +2399,20 @@
                     syncStatusText.textContent = 'Not Synced';
                 }
             },
-            
+
             formatLabel(key) {
                 return key.replace(/_/g, ' ')
-                         .replace(/([a-z])([A-Z])/g, '$1 $2')
-                         .split(' ')
-                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                         .join(' ');
+                    .replace(/([a-z])([A-Z])/g, '$1 $2')
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
             }
         };
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', async () => {
             UI.initEventListeners();
-            
+
             // Load config and initialize UI
             const loaded = await ConfigManager.loadConfig();
             if (loaded) {
@@ -2373,4 +2424,5 @@
         });
     </script>
 </body>
+
 </html>
