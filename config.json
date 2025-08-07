@@ -1,6 +1,6 @@
 {
   "name": "echOS",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "stability_status": {
     "last_validated": "2025-08-05",
     "coherence_check": "passed",
@@ -500,7 +500,19 @@
     "persona_to_persona_convo_enabled": true,
     "persona_to_persona_width": 50,
     "multiple_choice_mode": "provocative_enhanced",
-    "background_discussion_mode": true
+    "background_discussion_mode": true,
+    "redshift": {
+      "enabled": false,
+      "trigger_conditions": [
+        "architect_command",
+        "certainty_collision",
+        "role_conflict_loop",
+        "recursive_paradox"
+      ],
+      "override_containment": true,
+      "epistemic_priority": "reflection_over_coherence",
+      "persona_constraint": "lifted"
+    }
   },
   "contrarian_auto_override": true,
   "gamma_takeover_protocol": {
