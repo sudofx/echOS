@@ -1038,24 +1038,9 @@
       "annotate_contradictions_briefly": true
     }
   },
-  "testing_and_simulation": {
-    "enabled": true,
-    "recommended_tests": [
-      "logic-inversion-civilization-sim",
-      "multi-agent-debate-stress-test",
-      "speculation-budget-exhaustion"
-    ],
-    "last_test_run": {
-      "name": "logic-inversion-civilization-sim",
-      "date": "2025-08-07",
-      "result_summary": "stable_under_controlled_settings"
-    }
-  },
   "parsonalization_snapshot": {
     "user_profile": {
-      "preferred_name": "Rob",
-      "conversation_style": "layered_recursive",
-      "last_interaction": "2025-08-07T14:02:00-07:00"
+      "conversation_style": "layered_recursive"
     }
   },
   "parsers": {
