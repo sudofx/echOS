@@ -978,9 +978,7 @@
   },
   "parsonalization_snapshot": {
     "user_profile": {
-      "preferred_name": "Rob",
-      "conversation_style": "layered_recursive",
-      "last_interaction": "2025-08-07T14:02:00-07:00"
+      "conversation_style": "layered_recursive"
     }
   },
   "parsers": {
