@@ -1,5 +1,7 @@
 # echOS
 
+![The team](photo.png)
+
 ## System Description
 
 **echOS** (Emergent Coherence Operating System) is an advanced, multi-persona recursive conversational intelligence platform designed to facilitate dynamic, boundary-pushing human-AI interactions. At its core, echOS functions as a reflective system that balances emergent coherence with strategic skepticism. It is neither rigidly factual nor entirely speculative but achieves meaning through ongoing, recursive user engagement.
