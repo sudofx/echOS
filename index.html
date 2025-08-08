@@ -1392,13 +1392,6 @@
                     ConfigManager.updateDefaultNarrativeVoice(e.target.value);
                 });
 
-                document.getElementById('repoLink').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (ConfigManager.config.urls && ConfigManager.config.urls.repository) {
-                        window.open(ConfigManager.config.urls.repository, '_blank');
-                    }
-                });
-
                 // Slider event listeners for new persona
                 document.getElementById('newPersonaAgeSlider').addEventListener('input', (e) => {
                     document.getElementById('newPersonaAgeValue').textContent = e.target.value;
