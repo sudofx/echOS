@@ -110,4 +110,5 @@ slnx.sqlite
 .devcontainer/*
 
 # project custom files
-memory_bank.json
+tests/
+tests/*
