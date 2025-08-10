@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <title>Idea Ecosystem</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text&display=swap');
@@ -17,7 +17,7 @@
       Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     color: white;
     user-select: none;
-    font-size: 110%; /* 10% larger fonts */
+    font-size: 110%;
   }
 
   #ecosystem {
@@ -37,73 +37,54 @@
     cursor: pointer;
   }
 
-  header {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 600px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 1.8rem;
-    padding: 16px 0;
-    background: rgba(15 15 15 / 0.15);
-    backdrop-filter: saturate(180%) blur(15px);
-    border-radius: 0 0 8px 8px;
-    transition: opacity 0.6s ease;
-    z-index: 10;
-    user-select: none;
-  }
-
-  header:not(:hover) {
-    opacity: 0.1;
-  }
-
+  /* Dashboard panel moved to left */
   #controlsPanel {
     position: fixed;
     top: 60px;
-    right: 0;
+    left: 0;
     width: 320px;
     max-width: 90vw;
     height: calc(100% - 60px);
     background: rgba(30 30 30 / 0.7);
     backdrop-filter: saturate(180%) blur(25px);
-    box-shadow: -2px 0 12px rgba(0,0,0,0.8);
+    box-shadow: 2px 0 12px rgba(0,0,0,0.8);
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    border-radius: 8px 0 0 8px;
+    border-radius: 0 8px 8px 0;
     z-index: 9999; /* Always above all */
     transition: transform 0.3s ease;
+    transform: translateX(-100%);
   }
 
-  #controlsPanel.hidden {
-    transform: translateX(100%);
-    z-index: 0; /* move behind when hidden */
+  #controlsPanel.visible {
+    transform: translateX(0);
   }
 
+  /* Dashboard toggle button on left */
   #dashboardToggle {
     position: fixed;
     top: 60px;
-    right: 320px;
-    width: 30px;
-    height: 30px;
+    left: 0;
+    width: 36px;
+    height: 36px;
     background: rgba(30 30 30 / 0.7);
     color: white;
-    font-size: 20px;
-    line-height: 30px;
+    font-size: 28px;
+    line-height: 36px;
     text-align: center;
-    border-radius: 4px 0 0 4px;
+    border-radius: 0 8px 8px 0;
     cursor: pointer;
     z-index: 10000; /* always above controlsPanel */
     user-select: none;
-    transition: right 0.3s ease;
+    transition: left 0.3s ease;
+    user-select:none;
   }
 
-  #controlsPanel.hidden + #dashboardToggle {
-    right: 0;
+  /* Shift toggle button when panel visible */
+  #controlsPanel.visible + #dashboardToggle {
+    left: 320px;
   }
 
   label {
@@ -123,10 +104,11 @@
     gap: 8px;
   }
 
+  /* Idea popup styling */
   .ideaPopup {
-    position: absolute;
+    position: fixed;
     max-width: 280px;
-    padding: 12px 16px;
+    padding: 12px 16px 16px 16px;
     background: rgba(30 30 30 / 0.9);
     border-radius: 8px;
     box-shadow:
@@ -138,10 +120,11 @@
     user-select: text;
     cursor: default;
     transition: opacity 0.5s ease, filter 0.5s ease;
-    z-index: 50; /* below dashboard */
+    z-index: 50; /* below dashboard panel */
     text-shadow:
       0 0 4px rgba(100,180,255,0.6),
       0 0 8px rgba(100,180,255,0.4);
+    touch-action: none;
   }
 
   .ideaPopup.lowOpacity {
@@ -181,6 +164,26 @@
     user-select: none;
   }
 
+  .pinBtn {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+    user-select: none;
+    fill: white;
+    transition: opacity 0.3s ease;
+  }
+  .pinBtn:hover {
+    opacity: 1;
+  }
+  .pinBtn.pinned {
+    opacity: 1;
+    filter: drop-shadow(0 0 3px #64b4ff);
+  }
+
   .linkedIdeas {
     margin-top: 10px;
     font-size: 0.95rem;
@@ -200,8 +203,6 @@
 </style>
 </head>
 <body>
-
-<header id="titleHeader">Idea Ecosystem</header>
 
 <div id="ecosystem">
   <canvas id="ecosystemCanvas"></canvas>
@@ -247,14 +248,12 @@
   const resetBtn = document.getElementById('resetBtn');
   const controlsPanel = document.getElementById('controlsPanel');
   const dashboardToggle = document.getElementById('dashboardToggle');
-  const titleHeader = document.getElementById('titleHeader');
 
   let width = ecosystemDiv.clientWidth;
   let height = ecosystemDiv.clientHeight;
 
   const edgeMargin = 30;
 
-  // Gamma weird ideas:
   const gammaWeirdIdeas = [
     "What if you could see invisible radio waves?",
     "What if you could pause time?",
@@ -289,17 +288,16 @@
       this.id = id;
       this.level = level;
       this.connections = new Set();
-      this.size = 12;
+      this.baseSize = 12;
       this.jiggleAmplitude = 0;
       this.jigglePhase = Math.random() * Math.PI * 2;
       this.energyBoost = energyBoost;
       this.isGammaWeird = isGammaWeird;
       this.isGammaStarter = false;
       this.age = 0;
-      this.colorHue = Math.floor(200 + (id * 35)) % 360; // varied hues for dots
+      this.colorHue = Math.floor(200 + (id * 35)) % 360;
 
       if (x === null || y === null) {
-        // Random position with margin
         this.baseX = edgeMargin + Math.random() * (width - edgeMargin * 2);
         this.baseY = edgeMargin + Math.random() * (height - edgeMargin * 2);
       } else {
@@ -346,27 +344,25 @@
 
     update(nodes, growthRate, challengeStrength, isConnected) {
       this.age += 1;
-      this.jigglePhase += 0.04; // slower jiggle
+      this.jigglePhase += 0.025;
 
-      // Slow floating base position movement in space
-      const slowFloatSpeed = 0.00015; // slower float
+      const slowFloatSpeed = 0.00015;
       this.baseX += Math.sin(this.age * slowFloatSpeed + this.id) * 0.03;
       this.baseY += Math.cos(this.age * slowFloatSpeed + this.id) * 0.025;
 
-      // Keep within edge margins
       this.baseX = Math.min(Math.max(this.baseX, edgeMargin), width - edgeMargin);
       this.baseY = Math.min(Math.max(this.baseY, edgeMargin), height - edgeMargin);
 
-      // Jiggle amplitude if connected
       this.jiggleAmplitude = this.connections.size > 0 ? 0.8 : 0;
 
-      // Jiggle position offset
       this.x = this.baseX + Math.sin(this.jigglePhase) * this.jiggleAmplitude;
       this.y = this.baseY + Math.cos(this.jigglePhase) * this.jiggleAmplitude;
+
+      // Pulsate size slightly
+      this.currentSize = this.baseSize + Math.sin(this.age * 0.15 + this.id) * 1.8;
     }
 
     draw(ctx, highlight) {
-      const baseSize = this.size;
       const glowAlpha = highlight ? 0.5 : 0.1;
       const baseColor = `hsl(${this.colorHue}, 70%, ${highlight ? 65 : 50}%)`;
 
@@ -377,7 +373,7 @@
       ctx.fillStyle = baseColor;
       ctx.strokeStyle = `hsla(0, 0%, 100%, ${highlight ? 0.7 : 0.15})`;
       ctx.lineWidth = highlight ? 2 : 1;
-      ctx.arc(this.x, this.y, baseSize, 0, Math.PI * 2);
+      ctx.arc(this.x, this.y, this.currentSize || this.baseSize, 0, Math.PI * 2);
       ctx.fill();
       ctx.stroke();
 
@@ -388,7 +384,6 @@
   let ideaNodes = [];
   let nextId = 0;
 
-  // Build connections: each node connects to up to 2 others
   function buildConnections(nodes) {
     for(let node of nodes) {
       node.connections.clear();
@@ -410,20 +405,6 @@
   let highlightedPath = new Set();
   let currentChainIds = [];
   let fadingTimeout = null;
-
-  function spawnGammaInspiredIdea(parentNode) {
-    const newId = nextId++;
-    const newX = parentNode.x + (Math.random() * 80 - 40);
-    const newY = parentNode.y + (Math.random() * 80 - 40);
-    const clampedX = Math.min(Math.max(newX, edgeMargin), width - edgeMargin);
-    const clampedY = Math.min(Math.max(newY, edgeMargin), height - edgeMargin);
-
-    const newNode = new IdeaNode(newId, null, 0, clampedX, clampedY);
-    ideaNodes.push(newNode);
-
-    parentNode.connections.add(newId);
-    newNode.connections.add(parentNode.id);
-  }
 
   function resetEcosystem() {
     ideaNodes = [];
@@ -450,7 +431,7 @@
     for (let node of ideaNodes) {
       const dx = x - node.x;
       const dy = y - node.y;
-      if (Math.sqrt(dx*dx + dy*dy) < node.size + 6) return node;
+      if (Math.sqrt(dx*dx + dy*dy) < (node.currentSize || node.baseSize) + 6) return node;
     }
     return null;
   }
@@ -459,6 +440,7 @@
     return `hsla(${h}, ${s}%, ${l}%, ${a})`;
   }
 
+  // Create draggable idea popup with pin
   function createPopup(node) {
     for(let popup of openPopups) {
       if(popup.dataset.nodeId == node.id) return popup;
@@ -475,41 +457,71 @@
     popup.style.left = `${left}px`;
     popup.style.top = `${top}px`;
     popup.style.borderRadius = '8px';
-    popup.style.position = 'fixed';
     popup.style.opacity = '1';
-    popup.style.zIndex = 49; // below dashboard panel
+    popup.style.zIndex = 49;
 
-    // Dragging state
+    // Pin state
+    let pinned = false;
+
+    // Pin button (SVG)
+    const pinBtn = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    pinBtn.setAttribute("viewBox", "0 0 24 24");
+    pinBtn.setAttribute("class", "pinBtn");
+    pinBtn.innerHTML = `<path fill="white" d="M12 2C10.89 2 10 2.89 10 4v6H4v4h6v6c0 1.11.89 2 2 2s2-.89 2-2v-6h6v-4h-6V4c0-1.11-.89-2-2-2z"/>`;
+    popup.appendChild(pinBtn);
+
+    pinBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      pinned = !pinned;
+      if(pinned) {
+        pinBtn.classList.add('pinned');
+        popup.classList.remove('lowOpacity');
+      } else {
+        pinBtn.classList.remove('pinned');
+      }
+    });
+
+    // Drag logic (supports mouse + touch)
     let dragOffsetX = 0, dragOffsetY = 0;
     let isDragging = false;
 
-    popup.addEventListener('mousedown', e => {
-      isDragging = true;
-      dragOffsetX = e.clientX - popup.getBoundingClientRect().left;
-      dragOffsetY = e.clientY - popup.getBoundingClientRect().top;
-      popup.style.transition = 'none';
+    function startDrag(e) {
       e.preventDefault();
-    });
+      isDragging = true;
+      pinned = true;
+      pinBtn.classList.add('pinned');
+      popup.classList.remove('lowOpacity');
 
-    window.addEventListener('mouseup', e => {
-      if (isDragging) {
-        isDragging = false;
-        popup.style.transition = 'opacity 0.5s ease';
-      }
-    });
+      const evt = e.type.startsWith('touch') ? e.touches[0] : e;
+      dragOffsetX = evt.clientX - popup.getBoundingClientRect().left;
+      dragOffsetY = evt.clientY - popup.getBoundingClientRect().top;
+      popup.style.transition = 'none';
+    }
+    function doDrag(e) {
+      if (!isDragging) return;
+      const evt = e.type.startsWith('touch') ? (e.touches[0] || e.changedTouches[0]) : e;
+      let newX = evt.clientX - dragOffsetX;
+      let newY = evt.clientY - dragOffsetY;
 
-    window.addEventListener('mousemove', e => {
-      if (isDragging) {
-        let newX = e.clientX - dragOffsetX;
-        let newY = e.clientY - dragOffsetY;
+      newX = Math.min(window.innerWidth - popup.offsetWidth - 10, Math.max(10, newX));
+      newY = Math.min(window.innerHeight - popup.offsetHeight - 10, Math.max(10, newY));
 
-        newX = Math.min(window.innerWidth - popup.offsetWidth - 10, Math.max(10, newX));
-        newY = Math.min(window.innerHeight - popup.offsetHeight - 10, Math.max(10, newY));
+      popup.style.left = newX + 'px';
+      popup.style.top = newY + 'px';
+    }
+    function stopDrag(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      popup.style.transition = 'opacity 0.5s ease';
+    }
 
-        popup.style.left = newX + 'px';
-        popup.style.top = newY + 'px';
-      }
-    });
+    popup.addEventListener('mousedown', startDrag);
+    popup.addEventListener('touchstart', startDrag, {passive: false});
+    window.addEventListener('mousemove', doDrag);
+    window.addEventListener('touchmove', doDrag, {passive: false});
+    window.addEventListener('mouseup', stopDrag);
+    window.addEventListener('touchend', stopDrag);
+    window.addEventListener('touchcancel', stopDrag);
 
     // Close button
     const closeBtn = document.createElement('div');
@@ -526,7 +538,7 @@
     const textNode = document.createElement('div');
     textNode.textContent = node.ideaText;
     textNode.style.color = 'white';
-    textNode.style.paddingRight = '20px';
+    textNode.style.paddingRight = '30px';
     popup.appendChild(textNode);
 
     // Show connected ideas as clickable links
@@ -549,19 +561,23 @@
       popup.appendChild(linkedDiv);
     }
 
-    // Panel opacity controlled by hover/mouse presence
+    // Opacity control with hover and pin
     let fadeTimeout;
+    function scheduleFade() {
+      if (pinned || isDragging) return;
+      clearTimeout(fadeTimeout);
+      fadeTimeout = setTimeout(() => {
+        popup.classList.add('lowOpacity');
+      }, 1000);
+    }
     popup.addEventListener('mouseenter', () => {
       clearTimeout(fadeTimeout);
       popup.classList.remove('lowOpacity');
     });
     popup.addEventListener('mouseleave', () => {
-      if (!isDragging) {
-        fadeTimeout = setTimeout(() => {
-          popup.classList.add('lowOpacity');
-        }, 1000);
-      }
+      scheduleFade();
     });
+    scheduleFade();
 
     ecosystemDiv.appendChild(popup);
     openPopups.push(popup);
@@ -588,20 +604,17 @@
   }
 
   function highlightPathTo(node) {
-    // Build path from currentChainIds or reset if chain broken
     if (currentChainIds.length === 0) {
       currentChainIds = [node.id];
       highlightedPath = new Set([node.id]);
       return;
     }
 
-    // If node connected to any currentChain node, extend chain
     let lastNodeId = currentChainIds[currentChainIds.length - 1];
     if (ideaNodes.find(n => n.id === lastNodeId).connections.has(node.id)) {
       currentChainIds.push(node.id);
       highlightedPath.add(node.id);
     } else {
-      // Chain broken - reset with fade out
       closeAllPopupsSlow();
       currentChainIds = [node.id];
       highlightedPath = new Set([node.id]);
@@ -615,11 +628,10 @@
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
-
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    // Draw all connections faintly
+    // Draw faint connection lines
     ctx.strokeStyle = 'rgba(255,255,255,0.05)';
     ctx.lineWidth = 1;
 
@@ -635,16 +647,14 @@
       }
     }
 
-    // Highlighted path connections with lively swirling rainbow colors
+    // Draw highlighted path connections with swirling rainbow effect
     const time = performance.now() / 1000;
 
     for (let i = 1; i < currentChainIds.length; i++) {
       const n1 = ideaNodes.find(n => n.id === currentChainIds[i - 1]);
       const n2 = ideaNodes.find(n => n.id === currentChainIds[i]);
-
       if (!n1 || !n2) continue;
 
-      // Calculate swirl offset
       const swirlAmplitude = 7;
       const swirlFrequency = 4;
       const swirlOffsetX = Math.sin(time * swirlFrequency + i) * swirlAmplitude;
@@ -670,9 +680,16 @@
       ctx.shadowBlur = 0;
     }
 
-    // Draw dots
+    // Draw idea nodes with pulsate and jiggle if connected
     for (let node of ideaNodes) {
       const isHighlighted = highlightedPath.has(node.id);
+
+      // Jiggle if connected
+      if (node.connections.size > 0) {
+        node.jiggleAmplitude = 0.8;
+      } else {
+        node.jiggleAmplitude = 0;
+      }
       node.draw(ctx, isHighlighted);
     }
   }
@@ -704,7 +721,7 @@
   });
 
   dashboardToggle.addEventListener('click', () => {
-    controlsPanel.classList.toggle('hidden');
+    controlsPanel.classList.toggle('visible');
   });
 
   function resize() {
@@ -717,8 +734,6 @@
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(devicePixelRatio, devicePixelRatio);
   }
-
-  window.addEventListener('resize', resize);
 
   ideaCountSlider.addEventListener('input', e => {
     ideaCountLabel.textContent = ideaCountSlider.value;
@@ -734,11 +749,12 @@
     stabilityThresholdLabel.textContent = stabilityThresholdSlider.value;
   });
 
+  window.addEventListener('resize', resize);
+
   resize();
   resetEcosystem();
   animate();
 })();
 </script>
-
 </body>
 </html>
