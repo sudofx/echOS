@@ -1,759 +1,966 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<title>Idea Ecosystem</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Idea Fusion — Neuron Lab</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text&display=swap');
-
-  body, html {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    height: 100%;
-    background: radial-gradient(circle at center, #0b0c10 0%, #050607 100%);
-    font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    color: white;
-    user-select: none;
-    font-size: 110%;
+  /* Keep the color scheme exactly as requested; subtle tweaks only */
+  :root{
+    --bg-1: #111117;
+    --bg-2: #1a1a1f;
+    --panel-bg: rgba(30,30,40,0.94);
+    --glass-accent: rgba(100,140,220,0.18);
+    --muted-text: rgba(210,225,255,0.9);
   }
 
-  #ecosystem {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background: radial-gradient(circle at center, #0b0c10 0%, #050607 100%);
-  }
+  /* base */
+  html,body{height:100%;margin:0;background:
+    radial-gradient(1200px 600px at 30% 30%, rgba(255,255,255,0.02), transparent 18%),
+    radial-gradient(800px 400px at 70% 70%, rgba(255,255,255,0.01), transparent 20%),
+    linear-gradient(135deg,var(--bg-1) 0%, var(--bg-2) 100%);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:110%;-webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+  #ecosystem{position:relative; width:100vw; height:100vh; overflow:hidden; touch-action:none;}
 
-  canvas {
-    display: block;
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-    cursor: pointer;
-  }
+  canvas{position:absolute; top:0; left:0; width:100%; height:100%; display:block; z-index:0;}
 
-  /* Dashboard panel moved to left */
-  #controlsPanel {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 320px;
-    max-width: 90vw;
-    height: calc(100% - 60px);
-    background: rgba(30 30 30 / 0.7);
-    backdrop-filter: saturate(180%) blur(25px);
-    box-shadow: 2px 0 12px rgba(0,0,0,0.8);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border-radius: 0 8px 8px 0;
-    z-index: 9999; /* Always above all */
-    transition: transform 0.3s ease;
-    transform: translateX(-100%);
+  /* Dashboard toggle (left) */
+  #dashboardToggle{
+    position:fixed; left:12px; top:12px; width:44px; height:44px; border-radius:6px;
+    background:rgba(20,22,32,0.85); display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 16px rgba(0,0,0,0.6), inset 0 0 10px rgba(255,255,255,0.02);
+    z-index:10020; cursor:pointer; user-select:none;
   }
+  #dashboardToggle svg{width:22px; height:22px; fill:#9fbfff; opacity:0.98;}
 
-  #controlsPanel.visible {
-    transform: translateX(0);
+  /* Controls panel (left) - pushed down 60px so toggle doesn't cover "Dashboard" heading */
+  #controlsPanel{
+    position:fixed; left:0; top:0; height:100%; width:320px; max-width:85vw;
+    transform:translateX(-340px); transition:transform 420ms cubic-bezier(.2,.9,.2,1);
+    background: linear-gradient(180deg, rgba(24,26,38,0.98), rgba(18,20,30,0.96));
+    box-shadow: 4px 0 24px rgba(20, 30, 60, 0.7); z-index:10010; border-radius:0 6px 6px 0;
+    padding: 60px 18px 18px 18px; /* <-- pushed down 60px so header sits below toggle */
+    box-sizing:border-box; color:var(--muted-text);
   }
+  #controlsPanel.visible{ transform: translateX(0); }
 
-  /* Dashboard toggle button on left */
-  #dashboardToggle {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 36px;
-    height: 36px;
-    background: rgba(30 30 30 / 0.7);
-    color: white;
-    font-size: 28px;
-    line-height: 36px;
-    text-align: center;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-    z-index: 10000; /* always above controlsPanel */
-    user-select: none;
-    transition: left 0.3s ease;
-    user-select:none;
-  }
+  #controlsPanel h2{ margin:0 0 6px 0; font-size:1.25rem; color:#dfeaff; }
+  #controlsPanel .controlRow{ margin-top:12px; }
+  #controlsPanel label{ display:block; font-weight:600; margin-bottom:6px; color: #cfe0ff; }
+  #controlsPanel input[type=range]{ width:100%; }
+  #resetBtn{ margin-top:20px; width:100%; padding:10px; border-radius:6px; border:0; background:#375a9c; color:white; font-weight:700; box-shadow:0 6px 14px rgba(40,60,120,0.45); cursor:pointer; }
 
-  /* Shift toggle button when panel visible */
-  #controlsPanel.visible + #dashboardToggle {
-    left: 320px;
+  /* Popup (idea panel) */
+  .popup{
+    position:fixed; z-index:100; max-width:300px; background: var(--panel-bg);
+    border-radius:6px; padding:12px 14px; box-sizing:border-box; color:white;
+    box-shadow: 0 12px 30px rgba(10,12,18,0.7), inset 0 0 10px rgba(255,255,255,0.02);
+    backdrop-filter: blur(10px) saturate(140%);
+    transition:opacity 300ms ease, transform 220ms ease;
+    touch-action:none;
+    user-select:text;
   }
+  .popup.lowOpacity{ opacity:0.12; pointer-events:none; }
+  .popup.fading{ animation:fadeWobble 5s forwards; }
+  @keyframes fadeWobble { 0%{opacity:1; transform:translateY(0)} 40%{opacity:0.6; transform:translateY(-6px) rotate(.8deg)} 100%{opacity:0; transform:translateY(10px)} }
 
-  label {
-    display: block;
-    font-size: 1rem;
-    margin-bottom: 4px;
-  }
+  .popup .closeBtn{ position:absolute; right:8px; top:6px; cursor:pointer; color:#e6eefc; font-weight:800; font-size:18px; user-select:none; }
+  .popup .pinBtn{ position:absolute; left:8px; top:8px; width:18px; height:18px; cursor:pointer; opacity:.9; }
+  .popup .pinBtn.pinned{ filter: drop-shadow(0 0 6px rgba(110,160,255,0.45)); opacity:1; }
+  .popup .ideaText{ color:#fff; margin:0; padding-right:36px; white-space:normal; word-break:break-word; line-height:1.25; }
+  .popup .linkedIdeas{ margin-top:10px; color:#b9d6ff; font-weight:700; font-size:0.95rem; }
+  .popup .linkedIdeas span{ cursor:pointer; margin-right:8px; text-decoration:underline; color:#dbeaff; }
 
-  input[type=range] {
-    width: 100%;
-  }
+  /* make textarea for custom node */
+  .popup textarea{ width:100%; min-height:80px; resize:vertical; margin-top:8px; padding:8px; border-radius:6px; border:0; background:rgba(255,255,255,0.05); color:white; font-size:1rem; box-sizing:border-box; }
 
-  .metrics {
-    font-size: 1rem;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-  }
+  /* small pin icon */
+  svg.icon{ width:18px; height:18px; display:block; }
 
-  /* Idea popup styling */
-  .ideaPopup {
-    position: fixed;
-    max-width: 280px;
-    padding: 12px 16px 16px 16px;
-    background: rgba(30 30 30 / 0.9);
-    border-radius: 8px;
-    box-shadow:
-      0 0 10px 1px rgba(100, 180, 255, 0.25),
-      0 0 20px 3px rgba(100, 180, 255, 0.15);
-    color: white;
-    font-size: 1rem;
-    line-height: 1.3;
-    user-select: text;
-    cursor: default;
-    transition: opacity 0.5s ease, filter 0.5s ease;
-    z-index: 50; /* below dashboard panel */
-    text-shadow:
-      0 0 4px rgba(100,180,255,0.6),
-      0 0 8px rgba(100,180,255,0.4);
-    touch-action: none;
-  }
+  /* helper for accessibility focus */
+  [role="button"]:focus{ outline:3px solid rgba(120,160,255,0.18); outline-offset:2px; border-radius:6px; }
 
-  .ideaPopup.lowOpacity {
-    opacity: 0.1 !important;
-  }
+  /* ensure all border radius changed to 6px in UI bits */
+  input[type=range], #resetBtn, #dashboardToggle, .popup, #controlsPanel{ border-radius:6px; }
 
-  .ideaPopup.fading {
-    animation: fadeWobble 5s forwards;
-  }
+  /* keep dashboard header visible and not overlapped by toggle;
+     we pushed the controlsPanel down 60px and the toggle sits in that gap */
+  #controlsPanel h2 { padding-top: 2px; }
 
-  @keyframes fadeWobble {
-    0% {
-      opacity: 1;
-      filter: none;
-      transform: translate(0, 0) rotate(0deg);
-    }
-    50% {
-      opacity: 0.5;
-      filter: blur(1px);
-      transform: translate(3px, -3px) rotate(1deg);
-    }
-    100% {
-      opacity: 0;
-      filter: blur(3px);
-      transform: translate(0, 0) rotate(-1deg);
-    }
+  /* small mobile tweaks */
+  @media (max-width:700px){
+    #controlsPanel{ width: 84vw; padding-left: 58px; } /* keep room for toggle */
+    #dashboardToggle{ left:8px; top:8px; }
   }
-
-  .closeBtn {
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    font-weight: 700;
-    font-size: 1.3rem;
-    color: white;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .pinBtn {
-    position: absolute;
-    top: 6px;
-    left: 8px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    opacity: 0.7;
-    user-select: none;
-    fill: white;
-    transition: opacity 0.3s ease;
-  }
-  .pinBtn:hover {
-    opacity: 1;
-  }
-  .pinBtn.pinned {
-    opacity: 1;
-    filter: drop-shadow(0 0 3px #64b4ff);
-  }
-
-  .linkedIdeas {
-    margin-top: 10px;
-    font-size: 0.95rem;
-    color: #aaccee;
-  }
-
-  .linkedIdeas span {
-    cursor: pointer;
-    text-decoration: underline;
-    margin-right: 6px;
-  }
-
-  .linkedIdeas span:hover {
-    color: #77aaff;
-  }
-
 </style>
 </head>
 <body>
+  <div id="ecosystem"><canvas id="canvas"></canvas></div>
 
-<div id="ecosystem">
-  <canvas id="ecosystemCanvas"></canvas>
-
-  <div id="controlsPanel">
-    <label>Idea Count: <span id="ideaCountLabel">5</span></label>
-    <input id="ideaCountSlider" type="range" min="5" max="50" step="1" value="5" />
-    <label>Growth Rate: <span id="growthRateLabel">0.2</span></label>
-    <input id="growthRateSlider" type="range" min="0.05" max="0.5" step="0.01" value="0.2" />
-    <label>Challenge Strength: <span id="challengeStrengthLabel">0.3</span></label>
-    <input id="challengeStrengthSlider" type="range" min="0.1" max="0.6" step="0.01" value="0.3" />
-    <label>Stability Threshold: <span id="stabilityThresholdLabel">0.7</span></label>
-    <input id="stabilityThresholdSlider" type="range" min="0.5" max="0.95" step="0.01" value="0.7" />
-    <button id="resetBtn" style="margin-top:20px; padding:8px; border:none; border-radius:8px; background:#4A90E2; color:white; font-weight:bold; cursor:pointer;">
-      Reset Ecosystem
-    </button>
-    <div class="metrics" style="margin-top: 20px;">
-      <div>Diversity: <span id="diversityIndexSpan">0</span></div>
-      <div>Resilience: <span id="resilienceQuotientSpan">0%</span></div>
-      <div>Cognitive Load: <span id="cognitiveLoadSpan">0</span></div>
-    </div>
+  <!-- dashboard toggle -->
+  <div id="dashboardToggle" role="button" aria-pressed="false" title="Open dashboard">
+    <svg viewBox="0 0 24 24" class="icon"><path d="M3 6h18M3 12h18M3 18h18" stroke="none" fill="currentColor"/></svg>
   </div>
 
-  <div id="dashboardToggle" title="Toggle Dashboard">☰</div>
-</div>
+  <!-- Controls panel (left) -->
+  <aside id="controlsPanel" aria-hidden="true" aria-label="Dashboard">
+    <h2>Dashboard</h2>
+
+    <div class="controlRow">
+      <label for="ideaCountSlider">Idea Count: <span id="ideaCountLabel">5</span></label>
+      <input id="ideaCountSlider" type="range" min="3" max="18" step="1" value="5" />
+    </div>
+
+    <div class="controlRow">
+      <label for="growthRateSlider">Growth Rate: <span id="growthRateLabel">0.5</span></label>
+      <input id="growthRateSlider" type="range" min="0.1" max="1.2" step="0.05" value="0.5" />
+    </div>
+
+    <div class="controlRow">
+      <label for="challengeSlider">Challenge Strength: <span id="challengeStrengthLabel">0.4</span></label>
+      <input id="challengeSlider" type="range" min="0" max="1" step="0.05" value="0.4" />
+    </div>
+
+    <div class="controlRow">
+      <label for="stabilitySlider">Stability Threshold: <span id="stabilityThresholdLabel">0.7</span></label>
+      <input id="stabilitySlider" type="range" min="0.3" max="0.95" step="0.05" value="0.7" />
+    </div>
+
+    <button id="resetBtn">Reset ecosystem</button>
+  </aside>
 
 <script>
 (() => {
-  const ecosystemDiv = document.getElementById('ecosystem');
-  const canvas = document.getElementById('ecosystemCanvas');
-  const ctx = canvas.getContext('2d');
+  /* ---- Environment & canvas setup ---- */
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  let DPR = Math.max(1, window.devicePixelRatio || 1);
+  let width = 0, height = 0;
 
-  const ideaCountSlider = document.getElementById('ideaCountSlider');
-  const growthRateSlider = document.getElementById('growthRateSlider');
-  const challengeStrengthSlider = document.getElementById('challengeStrengthSlider');
-  const stabilityThresholdSlider = document.getElementById('stabilityThresholdSlider');
+  function resizeCanvas(){
+    width = document.documentElement.clientWidth;
+    height = document.documentElement.clientHeight;
+    canvas.width = Math.floor(width * DPR);
+    canvas.height = Math.floor(height * DPR);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
 
-  const ideaCountLabel = document.getElementById('ideaCountLabel');
-  const growthRateLabel = document.getElementById('growthRateLabel');
-  const challengeStrengthLabel = document.getElementById('challengeStrengthLabel');
-  const stabilityThresholdLabel = document.getElementById('stabilityThresholdLabel');
-
-  const resetBtn = document.getElementById('resetBtn');
-  const controlsPanel = document.getElementById('controlsPanel');
+  /* ---- UI references ---- */
   const dashboardToggle = document.getElementById('dashboardToggle');
+  const controlsPanel = document.getElementById('controlsPanel');
+  const ideaCountSlider = document.getElementById('ideaCountSlider');
+  const ideaCountLabel = document.getElementById('ideaCountLabel');
+  const growthRateSlider = document.getElementById('growthRateSlider');
+  const growthRateLabel = document.getElementById('growthRateLabel');
+  const challengeSlider = document.getElementById('challengeSlider');
+  const challengeStrengthLabel = document.getElementById('challengeStrengthLabel');
+  const stabilitySlider = document.getElementById('stabilitySlider');
+  const stabilityThresholdLabel = document.getElementById('stabilityThresholdLabel');
+  const resetBtn = document.getElementById('resetBtn');
 
-  let width = ecosystemDiv.clientWidth;
-  let height = ecosystemDiv.clientHeight;
+  /* ---- Configuration ---- */
+  const MARGIN = 30;               // keep nodes 30px from edges
+  const INITIAL_COUNT = parseInt(ideaCountSlider.value,10) || 5;
 
-  const edgeMargin = 30;
-
+  /* ---- Idea content (preserve color scheme) ---- */
+  const gammaStarterIdeas = [
+    "Spark your wildest creativity.",
+    "Unlock unexpected connections.",
+    "Dive deep into curiosity.",
+    "Challenge norms with boldness.",
+    "Embrace playful experimentation."
+  ];
   const gammaWeirdIdeas = [
     "What if you could see invisible radio waves?",
-    "What if you could pause time?",
-    "What if colors had sounds?",
+    "What would you do if you could pause time?",
+    "Imagine communicating through dreams.",
+    "Could thoughts be shared instantly worldwide?",
+    "What if your shadow had its own mind?",
+    "Can memories be planted like seeds?",
+    "Could colors have sounds we never heard?",
+    "What if emotions could power machines?",
     "What if trees whispered secrets?",
-    "What if you could taste shapes?",
-    "What if gravity worked sideways?",
-    "What if shadows could dance?",
-    "What if memories were physical objects?",
-    "What if dreams were parallel lives?",
-    "What if you could talk to your past self?"
+    "What if gravity reversed for a second?"
   ];
 
-  const baseIdeaSnippets = [
-    "Creativity sparks connection.",
-    "Ideas grow like neurons firing.",
-    "Explore the edges of thought.",
-    "Unlock potential through curiosity.",
-    "Innovation is built on chaos."
-  ];
+  const starterPool = [...gammaStarterIdeas, ...gammaWeirdIdeas];
 
-  const gammaStarterIdeas = [
-    "Amp up your creativity with wild thoughts.",
-    "Let your mind wander freely and connect dots.",
-    "Break assumptions and build new paths.",
-    "Feed your ideas with playful energy.",
-    "Embrace unexpected leaps in thinking."
-  ];
-
-  class IdeaNode {
-    constructor(id, parentText = null, level = 0, x = null, y = null, ideaText = '', energyBoost = 0, isGammaWeird = false) {
-      this.id = id;
-      this.level = level;
-      this.connections = new Set();
-      this.baseSize = 12;
-      this.jiggleAmplitude = 0;
-      this.jigglePhase = Math.random() * Math.PI * 2;
-      this.energyBoost = energyBoost;
-      this.isGammaWeird = isGammaWeird;
-      this.isGammaStarter = false;
-      this.age = 0;
-      this.colorHue = Math.floor(200 + (id * 35)) % 360;
-
-      if (x === null || y === null) {
-        this.baseX = edgeMargin + Math.random() * (width - edgeMargin * 2);
-        this.baseY = edgeMargin + Math.random() * (height - edgeMargin * 2);
-      } else {
-        this.baseX = Math.min(Math.max(x, edgeMargin), width - edgeMargin);
-        this.baseY = Math.min(Math.max(y, edgeMargin), height - edgeMargin);
-      }
-
-      this.x = this.baseX;
-      this.y = this.baseY;
-
-      this.ideaText = ideaText || this.generateIdeaText(parentText);
-    }
-
-    generateIdeaText(parentText) {
-      if(this.isGammaWeird) {
-        return gammaWeirdIdeas[this.id % gammaWeirdIdeas.length];
-      }
-      if (this.level === 0) {
-        if(Math.random() < 0.25) {
-          this.isGammaStarter = true;
-          return gammaStarterIdeas[this.id % gammaStarterIdeas.length];
-        }
-        return baseIdeaSnippets[this.id % baseIdeaSnippets.length];
-      }
-      let base = parentText || baseIdeaSnippets[this.id % baseIdeaSnippets.length];
-      if(this.energyBoost > 0) {
-        base += ' + fueled by creative energy!';
-      }
-      const twistOptions = [
-        'Explore new angles.',
-        'Shift your perspective.',
-        'Embrace the unexpected.',
-        'Dive deeper into meaning.',
-        'Question all assumptions.',
-        'Build upon the unknown.',
-        'Connect seemingly unrelated dots.',
-        'Let your mind wander.',
-        'Transform ideas boldly.',
-        'See beyond the obvious.'
-      ];
-      let twist = twistOptions[Math.floor(Math.random() * twistOptions.length)];
-      return base + ' ' + twist;
-    }
-
-    update(nodes, growthRate, challengeStrength, isConnected) {
-      this.age += 1;
-      this.jigglePhase += 0.025;
-
-      const slowFloatSpeed = 0.00015;
-      this.baseX += Math.sin(this.age * slowFloatSpeed + this.id) * 0.03;
-      this.baseY += Math.cos(this.age * slowFloatSpeed + this.id) * 0.025;
-
-      this.baseX = Math.min(Math.max(this.baseX, edgeMargin), width - edgeMargin);
-      this.baseY = Math.min(Math.max(this.baseY, edgeMargin), height - edgeMargin);
-
-      this.jiggleAmplitude = this.connections.size > 0 ? 0.8 : 0;
-
-      this.x = this.baseX + Math.sin(this.jigglePhase) * this.jiggleAmplitude;
-      this.y = this.baseY + Math.cos(this.jigglePhase) * this.jiggleAmplitude;
-
-      // Pulsate size slightly
-      this.currentSize = this.baseSize + Math.sin(this.age * 0.15 + this.id) * 1.8;
-    }
-
-    draw(ctx, highlight) {
-      const glowAlpha = highlight ? 0.5 : 0.1;
-      const baseColor = `hsl(${this.colorHue}, 70%, ${highlight ? 65 : 50}%)`;
-
-      ctx.shadowColor = `hsla(${this.colorHue}, 80%, 70%, ${glowAlpha})`;
-      ctx.shadowBlur = highlight ? 8 : 2;
-
-      ctx.beginPath();
-      ctx.fillStyle = baseColor;
-      ctx.strokeStyle = `hsla(0, 0%, 100%, ${highlight ? 0.7 : 0.15})`;
-      ctx.lineWidth = highlight ? 2 : 1;
-      ctx.arc(this.x, this.y, this.currentSize || this.baseSize, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.shadowBlur = 0;
-    }
-  }
-
-  let ideaNodes = [];
+  /* ---- Data structures ---- */
+  let ideaNodes = [];       // array of nodes
   let nextId = 0;
+  let openPopups = [];      // active popup DOMs
+  let currentChainIds = []; // selection chain order
+  let highlightedPath = new Set();
 
-  function buildConnections(nodes) {
-    for(let node of nodes) {
-      node.connections.clear();
+  /* ---- Visual helper functions ---- */
+  function rand(min,max){ return min + Math.random()*(max-min); }
+  function choose(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  // Return hsl string with same scheme (blue-ish baseline), can pass overrides
+  function blueHue(base=215, variance=24, sat=70, light=60, a=1){
+    let h = (base + (Math.random()*variance - variance/2)) % 360;
+    return `hsl(${h}, ${sat}%, ${light}%)`;
+  }
+
+  // Reddish orange for the custom node
+  function customColor(){
+    return `hsl(${15 + Math.random()*10}, 85%, 55%)`; // warm orange-reddish
+  }
+
+  // Adjust HSL-like string brightness (naive)
+  function adjustLight(hsl, deltaL){
+    const m = hsl.match(/hsl\(([^,]+),\s*([^%]+)%,\s*([^%]+)%/);
+    if(!m) return hsl;
+    const h = +m[1], s = +m[2], l = Math.min(95, Math.max(5, +m[3] + deltaL));
+    return `hsl(${h}, ${s}%, ${l}%)`;
+  }
+
+  /* ---- Node class ---- */
+  class IdeaNode {
+    constructor(id, ideaText, x, y, color, isCustom=false){
+      this.id = id;
+      this.ideaText = ideaText;
+      this.x = x;
+      this.y = y;
+      this.color = color;
+      this.isCustom = !!isCustom;
+      this.connections = new Set();
+      this.baseSize = 16 + Math.random()*6; // 16-22
+      this.size = this.baseSize;
+      this.pulse = Math.random()*Math.PI*2;
+      this.jigglePhase = Math.random()*Math.PI*2;
+      this.jiggleAmplitude = 0;
+      this.vx = (Math.random()-0.5)*0.16;
+      this.vy = (Math.random()-0.5)*0.16;
     }
-    for(let i=0; i<nodes.length; i++) {
-      const node = nodes[i];
-      if(i+1 < nodes.length) {
-        node.connections.add(nodes[i+1].id);
-        nodes[i+1].connections.add(node.id);
-      }
-      if(i+2 < nodes.length && Math.random() > 0.6) {
-        node.connections.add(nodes[i+2].id);
-        nodes[i+2].connections.add(node.id);
-      }
+    update(){
+      // slow float
+      this.x += this.vx;
+      this.y += this.vy;
+      // constraints
+      this.x = Math.min(Math.max(this.x, MARGIN), width - MARGIN);
+      this.y = Math.min(Math.max(this.y, MARGIN), height - MARGIN);
+      // slight damping to keep slow
+      this.vx *= 0.999;
+      this.vy *= 0.999;
+
+      // jiggle when connected
+      this.jigglePhase += 0.06;
+      this.pulse += 0.045;
+      this.size = this.baseSize + Math.sin(this.pulse)*1.8;
+      // set jiggle amplitude from connections (slightly scaled)
+      this.jiggleAmplitude = this.connections.size > 0 ? 1.2 : 0;
+    }
+    draw(ctx, highlighted=false){
+      const gx = this.jiggleAmplitude * Math.sin(this.jigglePhase + this.id);
+      const gy = this.jiggleAmplitude * Math.cos(this.jigglePhase + this.id);
+      const cx = this.x + gx;
+      const cy = this.y + gy;
+
+      // outer glow ring
+      ctx.beginPath();
+      ctx.fillStyle = adjustLight(this.color, highlighted ? 8 : -2);
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = highlighted ? 18 : 6;
+      ctx.arc(cx, cy, this.size, 0, Math.PI*2);
+      ctx.fill();
+
+      // inner highlight
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(238, 244, 255, 0.95)';
+      ctx.arc(cx, cy, this.size*0.6, 0, Math.PI*2);
+      ctx.fill();
     }
   }
 
-  let openPopups = [];
-  let highlightedPath = new Set();
-  let currentChainIds = [];
-  let fadingTimeout = null;
-
-  function resetEcosystem() {
+  /* ---- Create initial nodes + custom node ---- */
+  function makeNodes(count){
     ideaNodes = [];
     nextId = 0;
-    const count = parseInt(ideaCountSlider.value);
+    // create count-1 regular nodes
+    for(let i=0;i<count-1;i++){
+      const x = MARGIN + Math.random()*(width - MARGIN*2);
+      const y = MARGIN + Math.random()*(height - MARGIN*2);
+      const text = starterPool[(i)%starterPool.length];
+      const col = blueHue(210, 40, 70, 60);
+      ideaNodes.push(new IdeaNode(nextId++, text, x, y, col, false));
+    }
+    // add one custom reddish-orange node
+    const cx = width*0.14 + Math.random()*40;
+    const cy = height*0.25 + Math.random()*80;
+    const custom = new IdeaNode(nextId++, "Click to add your idea (type to replace)", cx, cy, customColor(), true);
+    ideaNodes.push(custom);
+    // ensure there are connections
+    connectNodes(ideaNodes);
+  }
 
-    for(let i=0; i<count; i++) {
-      let isGammaWeird = false;
-      if(count > 3 && Math.random() < 0.2 && i < gammaWeirdIdeas.length) {
-        isGammaWeird = true;
+  function connectNodes(nodes){
+    // clear existing
+    nodes.forEach(n=> n.connections.clear());
+    // chain them to guarantee connectivity
+    for(let i=1;i<nodes.length;i++){
+      nodes[i].connections.add(nodes[i-1].id);
+      nodes[i-1].connections.add(nodes[i].id);
+    }
+    // add some extras
+    const extras = Math.floor(nodes.length * 0.6);
+    for(let i=0;i<extras;i++){
+      const a = nodes[Math.floor(Math.random()*nodes.length)];
+      const b = nodes[Math.floor(Math.random()*nodes.length)];
+      if(a && b && a !== b){
+        a.connections.add(b.id);
+        b.connections.add(a.id);
       }
-      ideaNodes.push(new IdeaNode(nextId++, null, 0, null, null, '', 0, isGammaWeird));
     }
-
-    buildConnections(ideaNodes);
-
-    currentChainIds = [];
-    highlightedPath.clear();
-    openPopups.forEach(popup => popup.remove());
-    openPopups = [];
   }
 
-  function findNodeAtPos(x, y) {
-    for (let node of ideaNodes) {
-      const dx = x - node.x;
-      const dy = y - node.y;
-      if (Math.sqrt(dx*dx + dy*dy) < (node.currentSize || node.baseSize) + 6) return node;
-    }
-    return null;
-  }
+  /* ---- Popup management ---- */
+  const ecosystemDiv = document.getElementById('ecosystem');
 
-  function lightenHsl(h, s=70, l=30, a=0.85) {
-    return `hsla(${h}, ${s}%, ${l}%, ${a})`;
-  }
-
-  // Create draggable idea popup with pin
-  function createPopup(node) {
-    for(let popup of openPopups) {
-      if(popup.dataset.nodeId == node.id) return popup;
-    }
-
-    const ecosystemRect = ecosystemDiv.getBoundingClientRect();
-    let left = node.x + ecosystemRect.left - 140;
-    let top = node.y + ecosystemRect.top - 110;
+  function createPopupForNode(node){
+    // don't duplicate
+    if(openPopups.find(p => parseInt(p.dataset.nodeId) === node.id)) return;
 
     const popup = document.createElement('div');
-    popup.className = 'ideaPopup';
-    popup.dataset.nodeId = node.id;
-    popup.style.background = lightenHsl(node.colorHue, 60, 25, 0.9);
-    popup.style.left = `${left}px`;
-    popup.style.top = `${top}px`;
-    popup.style.borderRadius = '8px';
+    popup.className = 'popup';
+    popup.dataset.nodeId = node.id.toString();
+    // color-match panel with node color (slightly darker)
+    popup.style.background = adjustLight(node.color, -12);
+    popup.style.color = '#fff';
+    popup.style.borderRadius = '6px';
+    popup.style.left = `${Math.min(Math.max(node.x - 140, 8), width - 320)}px`;
+    popup.style.top = `${Math.min(Math.max(node.y - 90, 8), height - 140)}px`;
     popup.style.opacity = '1';
-    popup.style.zIndex = 49;
 
-    // Pin state
-    let pinned = false;
+    // ---- Insert drag handle ----
+    const handle = document.createElement('div');
+    handle.className = 'popupHandle';
+    handle.style.height = '20px';
+    handle.style.cursor = 'move';
+    handle.style.marginBottom = '6px';
+    handle.style.background = 'rgba(255,255,255,0.05)';
+    handle.style.borderRadius = '4px';
+    popup.appendChild(handle);
 
-    // Pin button (SVG)
-    const pinBtn = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    pinBtn.setAttribute("viewBox", "0 0 24 24");
-    pinBtn.setAttribute("class", "pinBtn");
-    pinBtn.innerHTML = `<path fill="white" d="M12 2C10.89 2 10 2.89 10 4v6H4v4h6v6c0 1.11.89 2 2 2s2-.89 2-2v-6h6v-4h-6V4c0-1.11-.89-2-2-2z"/>`;
-    popup.appendChild(pinBtn);
+    // pin (svg)
+    const pin = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    pin.setAttribute('viewBox','0 0 24 24');
+    pin.classList.add('pinBtn');
+    pin.innerHTML = '<path d="M12 2L10 8H4L9 12L6 22L12 17L18 22L15 12L20 8H14L12 2Z"></path>';
+    popup.appendChild(pin);
 
-    pinBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      pinned = !pinned;
-      if(pinned) {
-        pinBtn.classList.add('pinned');
-        popup.classList.remove('lowOpacity');
-      } else {
-        pinBtn.classList.remove('pinned');
-      }
-    });
+    // close button
+    const close = document.createElement('div');
+    close.className = 'closeBtn';
+    close.textContent = '×';
+    popup.appendChild(close);
 
-    // Drag logic (supports mouse + touch)
-    let dragOffsetX = 0, dragOffsetY = 0;
-    let isDragging = false;
+    // content - if custom node -> textarea else text
+    if(node.isCustom){
+      const label = document.createElement('div');
+      label.style.fontWeight = 700;
+      label.style.marginBottom = '6px';
+      label.textContent = "Your idea starter (editable)";
+      popup.appendChild(label);
 
-    function startDrag(e) {
-      e.preventDefault();
-      isDragging = true;
-      pinned = true;
-      pinBtn.classList.add('pinned');
-      popup.classList.remove('lowOpacity');
+      const ta = document.createElement('textarea');
+      ta.removeAttribute('disabled');
+      ta.autofocus = true;
+      ta.addEventListener('click', e => e.stopPropagation());
+      ta.placeholder = "Type a concept, a single-line prompt, or a seed idea...";
+      ta.value = (node.ideaText && node.ideaText.startsWith("Click to add"))? "" : node.ideaText || "";
+      popup.appendChild(ta);
 
-      const evt = e.type.startsWith('touch') ? e.touches[0] : e;
-      dragOffsetX = evt.clientX - popup.getBoundingClientRect().left;
-      dragOffsetY = evt.clientY - popup.getBoundingClientRect().top;
-      popup.style.transition = 'none';
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = "Save idea";
+      saveBtn.style.marginTop = '8px';
+      saveBtn.style.padding = '8px 10px';
+      saveBtn.style.border = 'none';
+      saveBtn.style.borderRadius = '6px';
+      saveBtn.style.background = 'linear-gradient(180deg,#ff7b3d,#e85a2d)';
+      saveBtn.style.color = '#fff';
+      saveBtn.style.cursor = 'pointer';
+      popup.appendChild(saveBtn);
+
+      saveBtn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const text = ta.value.trim();
+        if(text.length>0){
+          node.ideaText = text;
+          node.isCustom = true;
+          // update this popup text visually (we keep textarea)
+          ta.value = node.ideaText;
+          // if chain exists, update fusion for chain
+          updateFusionForChain();
+        }
+        // pin the popup on save
+        pin.classList.add('pinned');
+        popup.dataset.pinned = '1';
+      });
+    } else {
+      const p = document.createElement('div');
+      p.className = 'ideaText';
+      p.textContent = node.ideaText;
+      popup.appendChild(p);
     }
-    function doDrag(e) {
-      if (!isDragging) return;
-      const evt = e.type.startsWith('touch') ? (e.touches[0] || e.changedTouches[0]) : e;
-      let newX = evt.clientX - dragOffsetX;
-      let newY = evt.clientY - dragOffsetY;
 
-      newX = Math.min(window.innerWidth - popup.offsetWidth - 10, Math.max(10, newX));
-      newY = Math.min(window.innerHeight - popup.offsetHeight - 10, Math.max(10, newY));
-
-      popup.style.left = newX + 'px';
-      popup.style.top = newY + 'px';
-    }
-    function stopDrag(e) {
-      if (!isDragging) return;
-      isDragging = false;
-      popup.style.transition = 'opacity 0.5s ease';
-    }
-
-    popup.addEventListener('mousedown', startDrag);
-    popup.addEventListener('touchstart', startDrag, {passive: false});
-    window.addEventListener('mousemove', doDrag);
-    window.addEventListener('touchmove', doDrag, {passive: false});
-    window.addEventListener('mouseup', stopDrag);
-    window.addEventListener('touchend', stopDrag);
-    window.addEventListener('touchcancel', stopDrag);
-
-    // Close button
-    const closeBtn = document.createElement('div');
-    closeBtn.className = 'closeBtn';
-    closeBtn.textContent = '×';
-    closeBtn.title = 'Close';
-    closeBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      closePopup(node.id);
-    });
-    popup.appendChild(closeBtn);
-
-    // Idea text content
-    const textNode = document.createElement('div');
-    textNode.textContent = node.ideaText;
-    textNode.style.color = 'white';
-    textNode.style.paddingRight = '30px';
-    popup.appendChild(textNode);
-
-    // Show connected ideas as clickable links
-    if (node.connections.size > 0) {
-      const linkedDiv = document.createElement('div');
-      linkedDiv.className = 'linkedIdeas';
-      linkedDiv.textContent = 'Connected ideas: ';
-      node.connections.forEach(connId => {
-        const linkSpan = document.createElement('span');
-        const connNode = ideaNodes.find(n => n.id === connId);
-        if (!connNode) return;
-        linkSpan.textContent = (connNode.ideaText.slice(0, 20)) + (connNode.ideaText.length > 20 ? '...' : '');
-        linkSpan.title = connNode.ideaText;
-        linkSpan.addEventListener('click', e => {
+    // linked ideas preview
+    const linkedDiv = document.createElement('div');
+    linkedDiv.className = 'linkedIdeas';
+    if(node.connections.size>0){
+      linkedDiv.textContent = 'Linked: ';
+      node.connections.forEach(connId=>{
+        const n = ideaNodes.find(it=>it.id===connId);
+        if(!n) return;
+        const s = document.createElement('span');
+        s.textContent = (n.ideaText.length>20 ? n.ideaText.slice(0,20)+'…' : n.ideaText);
+        s.title = n.ideaText;
+        s.addEventListener('click', (e)=>{
           e.stopPropagation();
-          selectNode(connNode);
+          selectNode(n);
         });
-        linkedDiv.appendChild(linkSpan);
+        linkedDiv.appendChild(s);
       });
       popup.appendChild(linkedDiv);
     }
 
-    // Opacity control with hover and pin
-    let fadeTimeout;
-    function scheduleFade() {
-      if (pinned || isDragging) return;
-      clearTimeout(fadeTimeout);
-      fadeTimeout = setTimeout(() => {
-        popup.classList.add('lowOpacity');
-      }, 1000);
+    // append and track
+    document.body.appendChild(popup);
+    openPopups.push(popup);
+
+    // dragging support (mouse + touch) with per-popup cleanup and state
+    let activeDrag = false;
+    let dx = 0, dy = 0;
+    // Store handler refs so we can remove them later
+    let onMove = null;
+    let onEnd = null;
+    // The startDrag/endDrag functions are per-popup
+    function startDrag(ev){
+      const evt = (ev.touches && ev.touches[0]) || ev;
+      activeDrag = true;
+      dx = evt.clientX - popup.getBoundingClientRect().left;
+      dy = evt.clientY - popup.getBoundingClientRect().top;
+      // auto pin when dragged
+      pin.classList.add('pinned');
+      popup.dataset.pinned = '1';
+      popup.style.transition = 'none';
+      // Prevent text selection on drag
+      document.body.style.userSelect = 'none';
+      // Add listeners to window (so drag works outside popup)
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('touchmove', onMove, {passive:false});
+      window.addEventListener('mouseup', onEnd);
+      window.addEventListener('touchend', onEnd);
+      ev.preventDefault();
+      ev.stopPropagation();
     }
-    popup.addEventListener('mouseenter', () => {
-      clearTimeout(fadeTimeout);
-      popup.classList.remove('lowOpacity');
+    onMove = function(ev){
+      if(!activeDrag) return;
+      const evt = (ev.touches && ev.touches[0]) || ev;
+      let nx = evt.clientX - dx;
+      let ny = evt.clientY - dy;
+      nx = Math.min(Math.max(nx, 6), width - popup.offsetWidth - 6);
+      ny = Math.min(Math.max(ny, 6), height - popup.offsetHeight - 6);
+      popup.style.left = nx + 'px';
+      popup.style.top = ny + 'px';
+      ev.preventDefault();
+    };
+    onEnd = function(ev){
+      if(!activeDrag) return;
+      activeDrag = false;
+      popup.style.transition = '';
+      // Remove listeners and cleanup
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('touchmove', onMove, {passive:false});
+      window.removeEventListener('mouseup', onEnd);
+      window.removeEventListener('touchend', onEnd);
+      document.body.style.userSelect = '';
+    };
+
+    handle.addEventListener('mousedown', startDrag);
+    handle.addEventListener('touchstart', startDrag, {passive:false});
+
+    // Store drag cleanup logic on the popup DOM element for external cleanup
+    popup._dragCleanup = function(){
+      // If currently dragging, end drag and cleanup
+      if(activeDrag){
+        onEnd();
+      } else {
+        // Remove listeners if somehow still attached
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('touchmove', onMove, {passive:false});
+        window.removeEventListener('mouseup', onEnd);
+        window.removeEventListener('touchend', onEnd);
+        document.body.style.userSelect = '';
+      }
+    };
+
+    // close
+    close.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      removePopup(node.id);
     });
-    popup.addEventListener('mouseleave', () => {
-      scheduleFade();
+
+    // pin toggle on pin click
+    pin.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(pin.classList.contains('pinned')){
+        pin.classList.remove('pinned');
+        popup.dataset.pinned='0';
+      } else {
+        pin.classList.add('pinned');
+        popup.dataset.pinned='1';
+      }
     });
+
+    // opacity by hover/touch - don't hide when pinned
+    let fadeTO = null;
+    function scheduleFade(){
+      if(popup.dataset.pinned === '1') return;
+      clearTimeout(fadeTO);
+      fadeTO = setTimeout(()=>{ popup.classList.add('lowOpacity'); }, 1000);
+    }
+    popup.addEventListener('mouseenter', ()=>{ clearTimeout(fadeTO); popup.classList.remove('lowOpacity'); });
+    popup.addEventListener('mouseleave', scheduleFade);
+    // initial fade unless pinned
     scheduleFade();
 
-    ecosystemDiv.appendChild(popup);
-    openPopups.push(popup);
+    // ensure popup text updates for non-custom nodes if fusion updates
     return popup;
   }
 
-  function closePopup(nodeId) {
-    let index = openPopups.findIndex(p => p.dataset.nodeId == nodeId);
-    if (index >= 0) {
-      const popup = openPopups[index];
-      popup.remove();
-      openPopups.splice(index, 1);
+  function removePopup(nodeId){
+    const idx = openPopups.findIndex(p => parseInt(p.dataset.nodeId) === nodeId);
+    if(idx>=0){
+      const el = openPopups[idx];
+      // If popup is being dragged, cleanup drag listeners and state
+      if (el._dragCleanup) {
+        el._dragCleanup();
+      }
+      el.remove();
+      openPopups.splice(idx,1);
     }
   }
 
-  function closeAllPopupsSlow() {
-    openPopups.forEach(popup => {
-      popup.classList.add('fading');
-      setTimeout(() => {
-        if (popup.parentElement) popup.parentElement.removeChild(popup);
-      }, 5000);
+  function closeAllPopupsSlow(){
+    openPopups.forEach(p=>{
+      p.classList.add('fading');
+      setTimeout(()=>{ if(p.parentElement) p.parentElement.removeChild(p); }, 5000);
     });
     openPopups = [];
   }
 
-  function highlightPathTo(node) {
-    if (currentChainIds.length === 0) {
+  /* ---- Fusion idea generation & update logic ---- */
+  function generateFusion(IDs){
+    const texts = IDs.map(id => {
+      const n = ideaNodes.find(x => x.id === id);
+      return n ? n.ideaText : '';
+    }).filter(Boolean);
+    if(texts.length === 0) return '';
+    const combined = texts.join(' • ');
+    const twists = [
+      'Together they spark a new perspective.',
+      'This fusion uncovers hidden pathways of thought.',
+      'Emerging synergy reveals a novel possibility.',
+      'A higher-order idea blooms from the overlap.'
+    ];
+    return combined + ' — ' + choose(twists);
+  }
+
+  // When chain changes, update the last popup to show fusion idea
+  function updateFusionForChain(){
+    if(currentChainIds.length === 0) return;
+    const fusion = generateFusion(currentChainIds);
+    // update or create popup for last node in chain
+    const lastId = currentChainIds[currentChainIds.length-1];
+    const node = ideaNodes.find(n=>n.id===lastId);
+    if(!node) return;
+    // ensure popup exists
+    let popup = openPopups.find(p => parseInt(p.dataset.nodeId) === lastId);
+    if(!popup){
+      popup = createPopupForNode(node);
+    }
+    // if last node has textarea (custom), don't replace it's textarea; instead show fusion in a linked area
+    const textArea = popup.querySelector('textarea');
+    if(textArea){
+      // create/update a small fusion div below
+      let fusionDiv = popup.querySelector('.fusionArea');
+      if(!fusionDiv){
+        fusionDiv = document.createElement('div');
+        fusionDiv.className = 'fusionArea';
+        fusionDiv.style.marginTop = '8px';
+        fusionDiv.style.padding = '8px';
+        fusionDiv.style.borderRadius = '6px';
+        fusionDiv.style.background = 'rgba(255,255,255,0.03)';
+        fusionDiv.style.fontSize = '0.95rem';
+        popup.appendChild(fusionDiv);
+      }
+      fusionDiv.textContent = fusion;
+    } else {
+      // replace main text node content for last popup
+      let textNode = popup.querySelector('.ideaText');
+      if(textNode) textNode.textContent = fusion;
+    }
+  }
+
+  /* ---- Chain handling (select nodes in sequence) ---- */
+  function areDirectlyConnected(a,b){
+    return a.connections.has(b.id) && b.connections.has(a.id);
+  }
+
+  function selectNode(node){
+    if(currentChainIds.length === 0){
       currentChainIds = [node.id];
-      highlightedPath = new Set([node.id]);
+      highlightedPath = new Set(currentChainIds);
+      // create popup for this node
+      createPopupForNode(node);
+      updateFusionForChain();
       return;
     }
-
-    let lastNodeId = currentChainIds[currentChainIds.length - 1];
-    if (ideaNodes.find(n => n.id === lastNodeId).connections.has(node.id)) {
+    // check if new selection connects to last chain item
+    const lastId = currentChainIds[currentChainIds.length-1];
+    const lastNode = ideaNodes.find(n=>n.id===lastId);
+    if(lastNode && lastNode.connections.has(node.id)){
       currentChainIds.push(node.id);
       highlightedPath.add(node.id);
+      // create popup and update fusion
+      createPopupForNode(node);
+      updateFusionForChain();
     } else {
+      // chain broken - fade old popups and restart
       closeAllPopupsSlow();
       currentChainIds = [node.id];
-      highlightedPath = new Set([node.id]);
+      highlightedPath = new Set(currentChainIds);
+      createPopupForNode(node);
+      updateFusionForChain();
     }
   }
 
-  function selectNode(node) {
-    highlightPathTo(node);
-    createPopup(node);
-  }
+  /* ---- Drawing entangled, neuron-like lines ---- */
+  function drawEntangledLines(now){
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ideaNodes.forEach(node => {
+      node.connections.forEach(connId => {
+        // draw each edge once
+        if(connId <= node.id) return;
+        const other = ideaNodes.find(n=>n.id===connId);
+        if(!other) return;
 
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+        // compute mid and swirl
+        const midX = (node.x + other.x)/2;
+        const midY = (node.y + other.y)/2;
+        const t = now * 0.003;
+        // multi-frequency wiggle -> entanglement-like
+        const swirl = Math.sin(t*4 + (node.id+other.id)) * 8 + Math.cos(t*2 + node.id*0.7)*4;
 
-    // Draw faint connection lines
-    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-    ctx.lineWidth = 1;
+        // choose base hue based on positions/time
+        const hue = ( ( (midX+midY)/10 ) + t*60 ) % 360;
 
-    for (let node of ideaNodes) {
-      for (let connId of node.connections) {
-        if (node.id < connId) {
-          const connNode = ideaNodes.find(n => n.id === connId);
-          ctx.beginPath();
-          ctx.moveTo(node.x, node.y);
-          ctx.lineTo(connNode.x, connNode.y);
-          ctx.stroke();
+        // subtle faint base connection
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255,255,255,0.04)`;
+        ctx.lineWidth = 1;
+        ctx.moveTo(node.x, node.y);
+        ctx.quadraticCurveTo(midX + Math.cos(t + node.id)*swirl, midY + Math.sin(t + other.id)*swirl, other.x, other.y);
+        ctx.stroke();
+
+        // if both in highlightedPath, draw more vivid entangled curves + traveling points
+        if(highlightedPath.has(node.id) && highlightedPath.has(other.id) &&
+           currentChainIds.includes(node.id) && currentChainIds.includes(other.id)){
+          // multiple layered curves, slightly offset
+          for(let i=0;i<3;i++){
+            const offset = (i-1)*6;
+            ctx.beginPath();
+            const a = node.x + Math.cos(t*1.2 + i + node.id)*offset;
+            const b = node.y + Math.sin(t*1.1 + i + node.id)*offset;
+            const c = other.x + Math.cos(t*1.3 + i + other.id)*offset;
+            const d = other.y + Math.sin(t*1.25 + i + other.id)*offset;
+            const ctrlX = midX + Math.cos(t*1.7 + i)* (swirl + offset*0.6);
+            const ctrlY = midY + Math.sin(t*1.6 + i)* (swirl + offset*0.6);
+            ctx.moveTo(a,b);
+            ctx.quadraticCurveTo(ctrlX, ctrlY, c, d);
+            ctx.strokeStyle = `hsla(${(hue + i*20)%360}, 85%, ${55 - i*6}%, ${0.28 + i*0.12})`;
+            ctx.lineWidth = 1.8 - i*0.3;
+            ctx.shadowColor = ctx.strokeStyle;
+            ctx.shadowBlur = 6;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+          }
+
+          // draw traveling particles along the connection to suggest entanglement flow
+          const particleCount = 1 + Math.floor(Math.abs(Math.sin(t*2 + node.id))*2);
+          for(let p=0;p<particleCount;p++){
+            const progress = ( (now*0.002) + p*0.33 + (node.id*0.07) ) % 1;
+            // quadratic curve param to position -> simple lerp on curve used
+            // approximate point on quadratic curve using de Casteljau for t=progress
+            const x0 = node.x, y0 = node.y;
+            const x1 = midX + Math.cos(t + node.id)*swirl, y1 = midY + Math.sin(t + other.id)*swirl;
+            const x2 = other.x, y2 = other.y;
+            // linear mixes
+            const xa = x0 + (x1 - x0)*progress;
+            const ya = y0 + (y1 - y0)*progress;
+            const xb = x1 + (x2 - x1)*progress;
+            const yb = y1 + (y2 - y1)*progress;
+            const px = xa + (xb - xa)*progress;
+            const py = ya + (yb - ya)*progress;
+            ctx.beginPath();
+            ctx.fillStyle = `hsla(${(hue+progress*60)%360}, 90%, 66%, ${0.95 - progress*0.6})`;
+            ctx.arc(px, py, 2.2, 0, Math.PI*2);
+            ctx.fill();
+          }
         }
-      }
+      });
+    });
+  }
+
+  /* ---- Canvas animation ---- */
+  let lastTS = performance.now();
+  function loop(ts){
+    const now = ts || performance.now();
+    const delta = Math.max(1, now - lastTS);
+    lastTS = now;
+
+    ctx.clearRect(0,0,width,height);
+
+    // Background stylized neurons: layered faint radial blobs + drifting micro-particles
+    // subtle moving luminous blobs (parallax)
+    drawNeuronBackground(now);
+
+    // update nodes
+    ideaNodes.forEach(n => n.update());
+
+    // draw entangled connection lines
+    drawEntangledLines(now);
+
+    // draw nodes on top
+    ideaNodes.forEach(n => {
+      const highlighted = highlightedPath.has(n.id);
+      n.draw(ctx, highlighted);
+    });
+
+    requestAnimationFrame(loop);
+  }
+
+  /* ---- Background neuron stylized effect ---- */
+  // small floating glows (not many for perf)
+  const blobs = [];
+  function initBlobs(){
+    blobs.length = 0;
+    const bcount = Math.max(6, Math.round((width+height)/800));
+    for(let i=0;i<bcount;i++){
+      blobs.push({
+        x: Math.random()*width,
+        y: Math.random()*height,
+        r: 120 + Math.random()*160,
+        hue: 200 + Math.random()*80,
+        offx: Math.random()*2000,
+        offy: Math.random()*2000,
+      });
     }
-
-    // Draw highlighted path connections with swirling rainbow effect
-    const time = performance.now() / 1000;
-
-    for (let i = 1; i < currentChainIds.length; i++) {
-      const n1 = ideaNodes.find(n => n.id === currentChainIds[i - 1]);
-      const n2 = ideaNodes.find(n => n.id === currentChainIds[i]);
-      if (!n1 || !n2) continue;
-
-      const swirlAmplitude = 7;
-      const swirlFrequency = 4;
-      const swirlOffsetX = Math.sin(time * swirlFrequency + i) * swirlAmplitude;
-      const swirlOffsetY = Math.cos(time * swirlFrequency + i) * swirlAmplitude;
-
-      const startX = n1.x + swirlOffsetX;
-      const startY = n1.y + swirlOffsetY;
-      const endX = n2.x + swirlOffsetX;
-      const endY = n2.y + swirlOffsetY;
-
-      const hueShift = (time * 120 + i * 50) % 360;
-      ctx.strokeStyle = `hsla(${hueShift}, 85%, 65%, 0.6)`;
-      ctx.lineWidth = 3;
-
-      ctx.shadowColor = ctx.strokeStyle;
-      ctx.shadowBlur = 12;
-
+  }
+  function drawNeuronBackground(now){
+    // layered soft blobs
+    blobs.forEach((b, idx)=>{
+      const t = now*0.00012 + idx;
+      const x = b.x + Math.cos(t + b.offx)*18;
+      const y = b.y + Math.sin(t + b.offy)*12;
+      const grd = ctx.createRadialGradient(x, y, 0, x, y, b.r);
+      const hue = b.hue;
+      grd.addColorStop(0, `hsla(${hue}, 85%, 62%, ${0.055})`);
+      grd.addColorStop(0.35, `hsla(${hue}, 85%, 55%, ${0.025})`);
+      grd.addColorStop(1, `rgba(0,0,0,0)`);
+      ctx.fillStyle = grd;
       ctx.beginPath();
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(endX, endY);
-      ctx.stroke();
+      ctx.fillRect(x-b.r, y-b.r, b.r*2, b.r*2);
+      ctx.fill();
+    });
 
-      ctx.shadowBlur = 0;
-    }
-
-    // Draw idea nodes with pulsate and jiggle if connected
-    for (let node of ideaNodes) {
-      const isHighlighted = highlightedPath.has(node.id);
-
-      // Jiggle if connected
-      if (node.connections.size > 0) {
-        node.jiggleAmplitude = 0.8;
-      } else {
-        node.jiggleAmplitude = 0;
-      }
-      node.draw(ctx, isHighlighted);
+    // floating micro particles (like synapse dust) — very subtle
+    const microCount = Math.min(24, Math.round((width*height)/90000));
+    for(let i=0;i<microCount;i++){
+      const x = ( (Math.sin((now*0.0002 + i)*1.7) + 1) / 2 ) * width;
+      const y = ( (Math.cos((now*0.00015 + i)*1.3) + 1) / 2 ) * height;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(200,220,255,${0.02 + (i%3)*0.01})`;
+      ctx.arc(x, y, 1.0 + (i%2)*0.6, 0, Math.PI*2);
+      ctx.fill();
     }
   }
 
-  function update() {
-    for (let node of ideaNodes) {
-      node.update(ideaNodes, parseFloat(growthRateSlider.value), parseFloat(challengeStrengthSlider.value));
-    }
-  }
-
-  function animate() {
-    update();
-    draw();
-    requestAnimationFrame(animate);
-  }
-
-  canvas.addEventListener('click', e => {
+  /* ---- Interaction: pointer/touch selection to build chains ---- */
+  function pointerToCanvasPos(e){
     const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const clickedNode = findNodeAtPos(mx, my);
-    if (clickedNode) {
-      selectNode(clickedNode);
+    const cx = (e.clientX ?? e.touches?.[0]?.clientX ?? 0) - rect.left;
+    const cy = (e.clientY ?? e.touches?.[0]?.clientY ?? 0) - rect.top;
+    return {x:cx, y:cy};
+  }
+
+  function findNodeAt(x,y){
+    // iterate reverse so visually top nodes get detected first
+    for(let i=ideaNodes.length-1;i>=0;i--){
+      const n = ideaNodes[i];
+      const dx = n.x - x, dy = n.y - y;
+      if(Math.sqrt(dx*dx + dy*dy) < (n.size + 10)) return n;
+    }
+    return null;
+  }
+
+  canvas.addEventListener('mousedown', (ev)=>{
+    const pos = pointerToCanvasPos(ev);
+    const node = findNodeAt(pos.x, pos.y);
+    if(node) selectNode(node);
+  });
+  canvas.addEventListener('touchstart', (ev)=>{
+    const pos = pointerToCanvasPos(ev);
+    const node = findNodeAt(pos.x, pos.y);
+    if(node){ selectNode(node); ev.preventDefault(); }
+  }, {passive:false});
+
+  /* ---- selectNode wrapper that also opens popups and handles custom node logic ---- */
+  function createPopupForNodeIfNeeded(node){
+    // ensure popup exists
+    let p = openPopups.find(el=>parseInt(el.dataset.nodeId)===node.id);
+    if(!p){
+      p = createPopupForNode(node);
+    }
+    // if custom node, focus textarea
+    if(node.isCustom){
+      const ta = p.querySelector('textarea');
+      if(ta) ta.focus();
+    }
+  }
+
+  function selectNode(node){
+    // open popup first (so users see what's selected)
+    createPopupForNodeIfNeeded(node);
+
+    // chain logic (only allow extending from last)
+    if(currentChainIds.length === 0){
+      currentChainIds = [node.id];
+      highlightedPath = new Set(currentChainIds);
+      updateFusionForChain();
+      return;
+    }
+    const lastId = currentChainIds[currentChainIds.length-1];
+    const lastNode = ideaNodes.find(n=>n.id===lastId);
+    if(lastNode && lastNode.connections.has(node.id)){
+      // extend
+      currentChainIds.push(node.id);
+      highlightedPath.add(node.id);
+      updateFusionForChain();
+    } else {
+      // break -> fade previous and restart
+      closeAllPopupsSlow();
+      currentChainIds = [node.id];
+      highlightedPath = new Set(currentChainIds);
+      updateFusionForChain();
+    }
+  }
+
+  /* ---- Update fusion text area for chain (applies to visible popups) ---- */
+  function updateFusionForChain(){
+    // compute fusion text
+    const fusion = generateFusion(currentChainIds);
+    // show it on the last popup, or create popup
+    if(currentChainIds.length===0) return;
+    const lastId = currentChainIds[currentChainIds.length-1];
+    let popup = openPopups.find(p=>parseInt(p.dataset.nodeId)===lastId);
+    if(!popup){
+      const node = ideaNodes.find(n=>n.id===lastId);
+      popup = createPopupForNode(node);
+    }
+    // if custom node popup has textarea, show fusion in fusionArea else replace idea text content
+    let node = ideaNodes.find(n=>n.id===lastId);
+    if(!node) return;
+    const ta = popup.querySelector('textarea');
+    if(ta){
+      let fdiv = popup.querySelector('.fusionArea');
+      if(!fdiv){
+        fdiv = document.createElement('div');
+        fdiv.className = 'fusionArea';
+        fdiv.style.marginTop = '8px';
+        fdiv.style.padding = '8px';
+        fdiv.style.borderRadius = '6px';
+        fdiv.style.background = 'rgba(255,255,255,0.03)';
+        fdiv.style.fontSize = '0.95rem';
+        fdiv.style.color = '#e9f3ff';
+        popup.appendChild(fdiv);
+      }
+      fdiv.textContent = fusion;
+    } else {
+      const textNode = popup.querySelector('.ideaText');
+      if(textNode) textNode.textContent = fusion;
+    }
+  }
+
+  /* ---- UI controls behavior ---- */
+  dashboardToggle.addEventListener('click', ()=>{
+    const visible = controlsPanel.classList.toggle('visible');
+    dashboardToggle.setAttribute('aria-pressed', visible ? 'true' : 'false');
+    controlsPanel.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    // when dashboard is visible, ensure it sits above popups (z-index already set high)
+  });
+
+  ideaCountSlider.addEventListener('input', (e)=>{
+    const val = parseInt(e.target.value,10);
+    ideaCountLabel.textContent = val;
+  });
+
+  // change handlers that re-create ecosystem on release
+  ideaCountSlider.addEventListener('change', ()=>{
+    initEnvironment();
+  });
+
+  growthRateSlider.addEventListener('input', (e)=>{ growthRateLabel.textContent = e.target.value; });
+  challengeSlider.addEventListener('input', (e)=>{ challengeStrengthLabel.textContent = e.target.value; });
+  stabilitySlider.addEventListener('input', (e)=>{ stabilityThresholdLabel.textContent = e.target.value; });
+
+  resetBtn.addEventListener('click', ()=>{ initEnvironment(); });
+
+  /* ---- Initialize environment ---- */
+  function initEnvironment(){
+    resizeCanvas();
+    // create nodes based on slider count
+    const count = Math.max(3, parseInt(ideaCountSlider.value,10) || INITIAL_COUNT);
+    makeNodes(count);
+    // init blobs for background
+    initBlobs();
+    // clear popups and chain
+    closeAllPopupsSlow();
+    currentChainIds = [];
+    highlightedPath = new Set();
+  }
+
+  /* ---- Start -----------------------------------------------------------------*/
+  initEnvironment();
+  requestAnimationFrame(loop);
+
+  // ensure we re-init blobs when resizing
+  window.addEventListener('resize', ()=>{ initBlobs(); });
+
+  // small helper to re-evaluate fusion when any node text changed (e.g., custom saved)
+  // Observe DOM for textarea changes (if created) to update fusion live
+  document.addEventListener('input', e=>{
+    if(e.target && e.target.tagName === 'TEXTAREA'){
+      const popup = e.target.closest('.popup');
+      if(!popup) return;
+      const id = parseInt(popup.dataset.nodeId);
+      const node = ideaNodes.find(n=>n.id===id);
+      if(node){
+        node.ideaText = e.target.value;
+        updateFusionForChain();
+      }
     }
   });
 
-  resetBtn.addEventListener('click', () => {
-    resetEcosystem();
-  });
+  // expose some functions for debugging
+  window._ideaNodes = ideaNodes;
+  window._openPopups = openPopups;
 
-  dashboardToggle.addEventListener('click', () => {
-    controlsPanel.classList.toggle('visible');
-  });
-
-  function resize() {
-    width = ecosystemDiv.clientWidth;
-    height = ecosystemDiv.clientHeight;
-    canvas.width = width * devicePixelRatio;
-    canvas.height = height * devicePixelRatio;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-
-  ideaCountSlider.addEventListener('input', e => {
-    ideaCountLabel.textContent = ideaCountSlider.value;
-    resetEcosystem();
-  });
-  growthRateSlider.addEventListener('input', e => {
-    growthRateLabel.textContent = growthRateSlider.value;
-  });
-  challengeStrengthSlider.addEventListener('input', e => {
-    challengeStrengthLabel.textContent = challengeStrengthSlider.value;
-  });
-  stabilityThresholdSlider.addEventListener('input', e => {
-    stabilityThresholdLabel.textContent = stabilityThresholdSlider.value;
-  });
-
-  window.addEventListener('resize', resize);
-
-  resize();
-  resetEcosystem();
-  animate();
 })();
 </script>
 </body>
